@@ -5,6 +5,7 @@ import type {
   DatabaseQueryResult,
   I18nLanguagePayload,
   I18nResourcePayload,
+  I18nSupportedLanguagesPayload,
   LicensingActivationPayload,
   LicensingActivationResult,
   LicensingStatusPayload,
@@ -31,8 +32,10 @@ declare global {
       onDownloaded: (listener: () => void) => () => void
     }
     i18nApi: {
-      getResources: (payload: { language: string; namespaces: string[] }) => Promise<I18nResourcePayload>
-      setLanguage: (payload: I18nLanguagePayload) => Promise<void>
+      getCurrentLanguage: () => Promise<I18nLanguagePayload>
+      getSupportedLanguages: () => Promise<I18nSupportedLanguagesPayload>
+      getResources: (payload: { language: import('../../../config/types').AppLanguage; namespaces: string[] }) => Promise<I18nResourcePayload>
+      setLanguage: (payload: I18nLanguagePayload) => Promise<I18nLanguagePayload>
     }
     licensingApi: {
       getStatus: () => Promise<LicensingStatusPayload>

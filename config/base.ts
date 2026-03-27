@@ -26,7 +26,7 @@ export const baseConfig: AppConfig = {
     enabled: false,
     defaultLanguage: 'en',
     supportedLanguages: ['en', 'ro', 'ru'],
-    namespaces: ['common'],
+    namespaces: ['common', 'settings', 'updater', 'errors'],
   },
   appProtection: {
     enabled: false,

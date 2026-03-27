@@ -4,7 +4,8 @@ import logoElectron from '@/assets/logo-electron.svg'
 import './App.css'
 
 function App() {
-  const rendererModules = registerRendererModuleRegistry(window.appApi.getConfig())
+  const config = window.appApi.getConfig()
+  const rendererModules = registerRendererModuleRegistry(config)
 
   return (
     <div className='App'>

@@ -1,10 +1,12 @@
 import type { ProgressInfo } from 'electron-updater'
-import type { AppConfig } from '../../../config/types'
+import type { AppConfig, AppLanguage } from '../../../config/types'
 import type { UpdateErrorPayload, VersionInfo } from '../types/update'
 
 export const ipcInvokeChannels = {
   appGetInfo: 'app:get-info',
   appOpenWindow: 'app:open-window',
+  i18nGetCurrentLanguage: 'i18n:get-current-language',
+  i18nGetSupportedLanguages: 'i18n:get-supported-languages',
   i18nGetResources: 'i18n:get-resources',
   i18nSetLanguage: 'i18n:set-language',
   updateCheckForUpdates: 'update:check-for-updates',
@@ -32,12 +34,16 @@ export interface AppInfoPayload {
 }
 
 export interface I18nResourcePayload {
-  language: string
+  language: AppLanguage
   namespaces: Record<string, Record<string, string>>
 }
 
 export interface I18nLanguagePayload {
-  language: string
+  language: AppLanguage
+}
+
+export interface I18nSupportedLanguagesPayload {
+  languages: AppLanguage[]
 }
 
 export interface LicensingStatusPayload {
@@ -76,8 +82,16 @@ export interface IpcInvokeContract {
     request: { route: string }
     response: void
   }
+  [ipcInvokeChannels.i18nGetCurrentLanguage]: {
+    request: void
+    response: I18nLanguagePayload
+  }
+  [ipcInvokeChannels.i18nGetSupportedLanguages]: {
+    request: void
+    response: I18nSupportedLanguagesPayload
+  }
   [ipcInvokeChannels.i18nGetResources]: {
-    request: { language: string; namespaces: string[] }
+    request: { language: AppLanguage; namespaces: string[] }
     response: I18nResourcePayload
   }
   [ipcInvokeChannels.i18nSetLanguage]: {

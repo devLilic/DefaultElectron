@@ -8,6 +8,8 @@ describe('ipc contracts', () => {
     expect(channels).toEqual([
       'app:get-info',
       'app:open-window',
+      'i18n:get-current-language',
+      'i18n:get-supported-languages',
       'i18n:get-resources',
       'i18n:set-language',
       'update:check-for-updates',
