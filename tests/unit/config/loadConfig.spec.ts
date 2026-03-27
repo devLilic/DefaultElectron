@@ -11,6 +11,9 @@ describe('loadConfig', () => {
     expect(config.features.licensing).toBe(false)
     expect(config.features.logging).toBe(true)
     expect(config.logging.level).toBe('debug')
+    expect(config.update.autoCheck).toBe(true)
+    expect(config.update.autoDownload).toBe(false)
+    expect(config.update.provider.visibility).toBe('public')
   })
 
   it('resolves production config from mode', () => {
@@ -28,6 +31,8 @@ describe('loadConfig', () => {
       APP_FEATURE_DATABASE: 'true',
       APP_UPDATE_OWNER: 'acme',
       APP_UPDATE_REPO: 'starter',
+      APP_UPDATE_VISIBILITY: 'private',
+      APP_UPDATE_AUTO_CHECK: 'false',
       APP_I18N_DEFAULT_LANGUAGE: 'ro',
       APP_I18N_SUPPORTED_LANGUAGES: 'en,ro',
       APP_I18N_NAMESPACES: 'common,settings',
@@ -39,8 +44,10 @@ describe('loadConfig', () => {
     expect(config.features.autoUpdate).toBe(true)
     expect(config.features.database).toBe(true)
     expect(config.update.enabled).toBe(true)
+    expect(config.update.autoCheck).toBe(false)
     expect(config.update.provider.owner).toBe('acme')
     expect(config.update.provider.repo).toBe('starter')
+    expect(config.update.provider.visibility).toBe('private')
     expect(config.i18n.enabled).toBe(true)
     expect(config.i18n.defaultLanguage).toBe('ro')
     expect(config.i18n.supportedLanguages).toEqual(['en', 'ro'])

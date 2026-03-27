@@ -12,7 +12,7 @@ import type {
 } from '@/shared/ipc/contracts'
 import type { UpdatePreferences, UiPreferences } from '@/shared/settings/types'
 import type { ProgressInfo } from 'electron-updater'
-import type { UpdateErrorPayload, VersionInfo } from './update'
+import type { UpdateErrorPayload, UpdateStateEvent, VersionInfo } from './update'
 
 declare global {
   interface Window {
@@ -24,8 +24,9 @@ declare global {
     }
     updateApi: {
       checkForUpdates: () => Promise<unknown>
-      startDownload: () => Promise<void>
+      downloadUpdate: () => Promise<void>
       quitAndInstall: () => Promise<void>
+      onStateChange: (listener: (event: UpdateStateEvent) => void) => () => void
       onAvailabilityChanged: (listener: (payload: VersionInfo) => void) => () => void
       onError: (listener: (payload: UpdateErrorPayload) => void) => () => void
       onDownloadProgress: (listener: (payload: ProgressInfo) => void) => () => void

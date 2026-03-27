@@ -29,6 +29,7 @@ describe('ipc contracts', () => {
 
     expect(channels).toEqual([
       'app:main-process-message',
+      'update:state-changed',
       'update:availability-changed',
       'update:error',
       'update:download-progress',

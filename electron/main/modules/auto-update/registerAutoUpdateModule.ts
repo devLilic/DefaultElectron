@@ -10,35 +10,48 @@ import { ipcEventChannels, ipcInvokeChannels } from '../../../../src/shared/ipc/
 
 const { autoUpdater } = createRequire(import.meta.url)('electron-updater')
 
-let updateHandlersRegistered = false
+let autoUpdateHandlersRegistered = false
 
-export function registerUpdateModule(
+export function registerAutoUpdateModule(
   getMainWindow: () => BrowserWindow | null,
   config: AppConfig,
 ) {
-  if (updateHandlersRegistered) {
+  if (autoUpdateHandlersRegistered) {
     return
   }
 
-  updateHandlersRegistered = true
+  autoUpdateHandlersRegistered = true
 
-  autoUpdater.autoDownload = false
+  autoUpdater.autoDownload = config.update.autoDownload
   autoUpdater.disableWebInstaller = false
   autoUpdater.allowDowngrade = false
+  autoUpdater.allowPrerelease = config.update.allowPrerelease
 
   autoUpdater.on('update-available', (info: UpdateInfo) => {
-    getMainWindow()?.webContents.send(ipcEventChannels.updateAvailabilityChanged, {
+    const payload = {
       update: true,
       version: app.getVersion(),
       newVersion: info.version,
+    }
+
+    getMainWindow()?.webContents.send(ipcEventChannels.updateAvailabilityChanged, payload)
+    getMainWindow()?.webContents.send(ipcEventChannels.updateStateChanged, {
+      type: 'availability-changed',
+      payload,
     })
   })
 
   autoUpdater.on('update-not-available', (info: UpdateInfo) => {
-    getMainWindow()?.webContents.send(ipcEventChannels.updateAvailabilityChanged, {
+    const payload = {
       update: false,
       version: app.getVersion(),
       newVersion: info.version,
+    }
+
+    getMainWindow()?.webContents.send(ipcEventChannels.updateAvailabilityChanged, payload)
+    getMainWindow()?.webContents.send(ipcEventChannels.updateStateChanged, {
+      type: 'availability-changed',
+      payload,
     })
   })
 
@@ -69,13 +82,24 @@ export function registerUpdateModule(
       (error, progressInfo) => {
         if (error) {
           event.sender.send(ipcEventChannels.updateError, { message: error.message, error })
+          event.sender.send(ipcEventChannels.updateStateChanged, {
+            type: 'error',
+            payload: { message: error.message, error },
+          })
           return
         }
 
         event.sender.send(ipcEventChannels.updateDownloadProgress, progressInfo)
+        event.sender.send(ipcEventChannels.updateStateChanged, {
+          type: 'download-progress',
+          payload: progressInfo,
+        })
       },
       () => {
         event.sender.send(ipcEventChannels.updateDownloaded)
+        event.sender.send(ipcEventChannels.updateStateChanged, {
+          type: 'downloaded',
+        })
       },
     )
   })
@@ -83,6 +107,10 @@ export function registerUpdateModule(
   ipcMain.handle(ipcInvokeChannels.updateQuitAndInstall, () => {
     autoUpdater.quitAndInstall(false, true)
   })
+
+  if (config.update.autoCheck && app.isPackaged) {
+    void autoUpdater.checkForUpdates().catch(() => undefined)
+  }
 }
 
 function startDownload(

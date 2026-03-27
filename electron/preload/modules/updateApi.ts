@@ -1,7 +1,7 @@
 import { contextBridge } from 'electron'
 import type { ProgressInfo } from 'electron-updater'
 import { ipcEventChannels, ipcInvokeChannels } from '../../../src/shared/ipc/contracts'
-import type { UpdateErrorPayload, VersionInfo } from '../../../src/shared/types/update'
+import type { UpdateErrorPayload, UpdateStateEvent, VersionInfo } from '../../../src/shared/types/update'
 import { invoke, subscribe, subscribeSignal } from './shared'
 
 export function registerUpdateApi() {
@@ -9,11 +9,14 @@ export function registerUpdateApi() {
     checkForUpdates() {
       return invoke(ipcInvokeChannels.updateCheckForUpdates)
     },
-    startDownload() {
+    downloadUpdate() {
       return invoke(ipcInvokeChannels.updateStartDownload)
     },
     quitAndInstall() {
       return invoke(ipcInvokeChannels.updateQuitAndInstall)
+    },
+    onStateChange(listener: (event: UpdateStateEvent) => void) {
+      return subscribe(ipcEventChannels.updateStateChanged, listener)
     },
     onAvailabilityChanged(listener: (payload: VersionInfo) => void) {
       return subscribe(ipcEventChannels.updateAvailabilityChanged, listener)

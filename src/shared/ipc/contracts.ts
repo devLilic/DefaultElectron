@@ -1,7 +1,7 @@
 import type { ProgressInfo } from 'electron-updater'
 import type { AppConfig, AppLanguage } from '../../../config/types'
 import type { AppSettings, SettingsKey } from '../settings/types'
-import type { UpdateErrorPayload, VersionInfo } from '../types/update'
+import type { UpdateErrorPayload, UpdateStateEvent, VersionInfo } from '../types/update'
 
 export const ipcInvokeChannels = {
   appGetInfo: 'app:get-info',
@@ -22,6 +22,7 @@ export const ipcInvokeChannels = {
 
 export const ipcEventChannels = {
   appMainProcessMessage: 'app:main-process-message',
+  updateStateChanged: 'update:state-changed',
   updateAvailabilityChanged: 'update:availability-changed',
   updateError: 'update:error',
   updateDownloadProgress: 'update:download-progress',
@@ -143,6 +144,7 @@ export interface IpcInvokeContract {
 
 export interface IpcEventContract {
   [ipcEventChannels.appMainProcessMessage]: string
+  [ipcEventChannels.updateStateChanged]: UpdateStateEvent
   [ipcEventChannels.updateAvailabilityChanged]: VersionInfo
   [ipcEventChannels.updateError]: UpdateErrorPayload
   [ipcEventChannels.updateDownloadProgress]: ProgressInfo

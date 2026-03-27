@@ -14,12 +14,14 @@ export const baseConfig: AppConfig = {
   update: {
     enabled: false,
     channel: 'latest',
+    autoCheck: true,
     autoDownload: false,
     allowPrerelease: false,
     provider: {
       provider: 'github',
       owner: 'electron-vite',
       repo: 'electron-vite-react',
+      visibility: 'public',
     },
   },
   i18n: {

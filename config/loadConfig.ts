@@ -47,10 +47,12 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
     provider: env.APP_UPDATE_PROVIDER === 'github' ? 'github' : undefined,
     owner: env.APP_UPDATE_OWNER,
     repo: env.APP_UPDATE_REPO,
+    visibility: parseUpdateVisibility(env.APP_UPDATE_VISIBILITY),
   })
   const update = compactObject<AppConfigOverride['update'] extends infer T ? Extract<T, object> : never>({
     enabled: parseBoolean(env.APP_UPDATE_ENABLED) ?? featureAutoUpdate,
     channel: env.APP_UPDATE_CHANNEL === 'latest' ? 'latest' : undefined,
+    autoCheck: parseBoolean(env.APP_UPDATE_AUTO_CHECK),
     autoDownload: parseBoolean(env.APP_UPDATE_AUTO_DOWNLOAD),
     allowPrerelease: parseBoolean(env.APP_UPDATE_ALLOW_PRERELEASE),
     provider: updateProvider,
@@ -245,6 +247,14 @@ function parseLogLevel(value: string | undefined) {
     value === 'info' ||
     value === 'debug'
   ) {
+    return value
+  }
+
+  return undefined
+}
+
+function parseUpdateVisibility(value: string | undefined) {
+  if (value === 'public' || value === 'private') {
     return value
   }
 

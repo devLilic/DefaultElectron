@@ -15,11 +15,13 @@ export interface UpdateProviderConfig {
   provider: 'github'
   owner: string
   repo: string
+  visibility: 'public' | 'private'
 }
 
 export interface UpdateConfig {
   enabled: boolean
   channel: 'latest'
+  autoCheck: boolean
   autoDownload: boolean
   allowPrerelease: boolean
   provider: UpdateProviderConfig
