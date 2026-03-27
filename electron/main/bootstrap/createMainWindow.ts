@@ -1,6 +1,7 @@
 import { indexHtmlPath, VITE_DEV_SERVER_URL } from './paths'
 import { configureExternalLinks } from '../security/externalLinks'
 import { createSecureBrowserWindow } from '../security/windowFactory'
+import { ipcEventChannels } from '../../../src/shared/ipc/contracts'
 
 export async function createMainWindow() {
   const window = createSecureBrowserWindow({
@@ -15,7 +16,7 @@ export async function createMainWindow() {
   }
 
   window.webContents.on('did-finish-load', () => {
-    window.webContents.send('app:main-process-message', new Date().toLocaleString())
+    window.webContents.send(ipcEventChannels.appMainProcessMessage, new Date().toLocaleString())
   })
 
   configureExternalLinks(window)

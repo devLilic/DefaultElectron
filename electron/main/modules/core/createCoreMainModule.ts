@@ -4,8 +4,8 @@ import type { MainModule } from '../../../../src/shared/modules/contracts'
 export function createCoreMainModule(): MainModule {
   return {
     id: 'core',
-    register() {
-      registerCoreIpc()
+    register(context) {
+      registerCoreIpc(context.config)
     },
   }
 }

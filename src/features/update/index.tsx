@@ -16,7 +16,7 @@ const UpdateFeature = () => {
 
   const checkUpdate = async () => {
     setChecking(true)
-    const result = await window.appApi.checkForUpdates()
+    const result = await window.updateApi.checkForUpdates()
     setProgressInfo({ percent: 0 })
     setChecking(false)
     setModalOpen(true)
@@ -28,23 +28,23 @@ const UpdateFeature = () => {
   }
 
   useEffect(() => {
-    const unsubscribeAvailability = window.appApi.onUpdateAvailabilityChanged((payload) => {
+    const unsubscribeAvailability = window.updateApi.onAvailabilityChanged((payload) => {
       setVersionInfo(payload)
       setUpdateError(undefined)
       setReadyToInstall(false)
       setUpdateAvailable(payload.update)
     })
 
-    const unsubscribeError = window.appApi.onUpdateError((payload) => {
+    const unsubscribeError = window.updateApi.onError((payload) => {
       setUpdateAvailable(false)
       setUpdateError(payload)
     })
 
-    const unsubscribeProgress = window.appApi.onUpdateDownloadProgress((payload) => {
+    const unsubscribeProgress = window.updateApi.onDownloadProgress((payload) => {
       setProgressInfo(payload)
     })
 
-    const unsubscribeDownloaded = window.appApi.onUpdateDownloaded(() => {
+    const unsubscribeDownloaded = window.updateApi.onDownloaded(() => {
       setProgressInfo({ percent: 100 })
       setReadyToInstall(true)
     })
@@ -66,11 +66,11 @@ const UpdateFeature = () => {
         onCancel={() => setModalOpen(false)}
         onOk={() => {
           if (readyToInstall) {
-            void window.appApi.quitAndInstallUpdate()
+            void window.updateApi.quitAndInstall()
             return
           }
 
-          void window.appApi.startUpdateDownload()
+          void window.updateApi.startDownload()
         }}
         footer={updateAvailable ? null : undefined}
       >

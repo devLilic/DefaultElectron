@@ -6,6 +6,7 @@ import type {
   UpdateInfo,
 } from 'electron-updater'
 import type { AppConfig } from '../../../../config/types'
+import { ipcEventChannels, ipcInvokeChannels } from '../../../../src/shared/ipc/contracts'
 
 const { autoUpdater } = createRequire(import.meta.url)('electron-updater')
 
@@ -26,7 +27,7 @@ export function registerUpdateModule(
   autoUpdater.allowDowngrade = false
 
   autoUpdater.on('update-available', (info: UpdateInfo) => {
-    getMainWindow()?.webContents.send('update:availability-changed', {
+    getMainWindow()?.webContents.send(ipcEventChannels.updateAvailabilityChanged, {
       update: true,
       version: app.getVersion(),
       newVersion: info.version,
@@ -34,14 +35,14 @@ export function registerUpdateModule(
   })
 
   autoUpdater.on('update-not-available', (info: UpdateInfo) => {
-    getMainWindow()?.webContents.send('update:availability-changed', {
+    getMainWindow()?.webContents.send(ipcEventChannels.updateAvailabilityChanged, {
       update: false,
       version: app.getVersion(),
       newVersion: info.version,
     })
   })
 
-  ipcMain.handle('app:check-for-updates', async () => {
+  ipcMain.handle(ipcInvokeChannels.updateCheckForUpdates, async () => {
     if (!config.features.autoUpdate) {
       return {
         message: 'Auto update is disabled by configuration.',
@@ -63,23 +64,23 @@ export function registerUpdateModule(
     }
   })
 
-  ipcMain.handle('app:start-update-download', (event) => {
+  ipcMain.handle(ipcInvokeChannels.updateStartDownload, (event) => {
     startDownload(
       (error, progressInfo) => {
         if (error) {
-          event.sender.send('update:error', { message: error.message, error })
+          event.sender.send(ipcEventChannels.updateError, { message: error.message, error })
           return
         }
 
-        event.sender.send('update:download-progress', progressInfo)
+        event.sender.send(ipcEventChannels.updateDownloadProgress, progressInfo)
       },
       () => {
-        event.sender.send('update:downloaded')
+        event.sender.send(ipcEventChannels.updateDownloaded)
       },
     )
   })
 
-  ipcMain.handle('app:quit-and-install-update', () => {
+  ipcMain.handle(ipcInvokeChannels.updateQuitAndInstall, () => {
     autoUpdater.quitAndInstall(false, true)
   })
 }

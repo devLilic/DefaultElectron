@@ -1,0 +1,127 @@
+import type { ProgressInfo } from 'electron-updater'
+import type { AppConfig } from '../../../config/types'
+import type { UpdateErrorPayload, VersionInfo } from '../types/update'
+
+export const ipcInvokeChannels = {
+  appGetInfo: 'app:get-info',
+  appOpenWindow: 'app:open-window',
+  i18nGetResources: 'i18n:get-resources',
+  i18nSetLanguage: 'i18n:set-language',
+  updateCheckForUpdates: 'update:check-for-updates',
+  updateStartDownload: 'update:start-download',
+  updateQuitAndInstall: 'update:quit-and-install',
+  licensingGetStatus: 'licensing:get-status',
+  licensingActivate: 'licensing:activate',
+  databaseQuery: 'database:query',
+  settingsGet: 'settings:get',
+  settingsSet: 'settings:set',
+} as const
+
+export const ipcEventChannels = {
+  appMainProcessMessage: 'app:main-process-message',
+  updateAvailabilityChanged: 'update:availability-changed',
+  updateError: 'update:error',
+  updateDownloadProgress: 'update:download-progress',
+  updateDownloaded: 'update:downloaded',
+} as const
+
+export interface AppInfoPayload {
+  appName: string
+  environment: AppConfig['environment']
+  version: string
+}
+
+export interface I18nResourcePayload {
+  language: string
+  namespaces: Record<string, Record<string, string>>
+}
+
+export interface I18nLanguagePayload {
+  language: string
+}
+
+export interface LicensingStatusPayload {
+  enabled: boolean
+  licensed: boolean
+}
+
+export interface LicensingActivationPayload {
+  key: string
+}
+
+export interface LicensingActivationResult {
+  success: boolean
+}
+
+export interface DatabaseQueryPayload {
+  sql: string
+  params?: unknown[]
+}
+
+export interface DatabaseQueryResult {
+  rows: unknown[]
+}
+
+export interface SettingsValuePayload {
+  key: string
+  value?: unknown
+}
+
+export interface IpcInvokeContract {
+  [ipcInvokeChannels.appGetInfo]: {
+    request: void
+    response: AppInfoPayload
+  }
+  [ipcInvokeChannels.appOpenWindow]: {
+    request: { route: string }
+    response: void
+  }
+  [ipcInvokeChannels.i18nGetResources]: {
+    request: { language: string; namespaces: string[] }
+    response: I18nResourcePayload
+  }
+  [ipcInvokeChannels.i18nSetLanguage]: {
+    request: I18nLanguagePayload
+    response: void
+  }
+  [ipcInvokeChannels.updateCheckForUpdates]: {
+    request: void
+    response: unknown
+  }
+  [ipcInvokeChannels.updateStartDownload]: {
+    request: void
+    response: void
+  }
+  [ipcInvokeChannels.updateQuitAndInstall]: {
+    request: void
+    response: void
+  }
+  [ipcInvokeChannels.licensingGetStatus]: {
+    request: void
+    response: LicensingStatusPayload
+  }
+  [ipcInvokeChannels.licensingActivate]: {
+    request: LicensingActivationPayload
+    response: LicensingActivationResult
+  }
+  [ipcInvokeChannels.databaseQuery]: {
+    request: DatabaseQueryPayload
+    response: DatabaseQueryResult
+  }
+  [ipcInvokeChannels.settingsGet]: {
+    request: { key: string }
+    response: SettingsValuePayload
+  }
+  [ipcInvokeChannels.settingsSet]: {
+    request: SettingsValuePayload
+    response: void
+  }
+}
+
+export interface IpcEventContract {
+  [ipcEventChannels.appMainProcessMessage]: string
+  [ipcEventChannels.updateAvailabilityChanged]: VersionInfo
+  [ipcEventChannels.updateError]: UpdateErrorPayload
+  [ipcEventChannels.updateDownloadProgress]: ProgressInfo
+  [ipcEventChannels.updateDownloaded]: void
+}
