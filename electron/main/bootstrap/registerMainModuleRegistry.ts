@@ -3,6 +3,7 @@ import type { BrowserWindow } from 'electron'
 import { registerMainModules } from '../../../src/shared/modules/registry'
 import { createCoreMainModule } from '../modules/core/createCoreMainModule'
 import { createI18nMainModule } from '../modules/i18n/createI18nMainModule'
+import { createSettingsMainModule } from '../modules/settings/createSettingsMainModule'
 import { createUpdateMainModule } from '../modules/update/createUpdateMainModule'
 
 export function registerMainModuleRegistry(
@@ -12,6 +13,7 @@ export function registerMainModuleRegistry(
   return registerMainModules(
     [
       createCoreMainModule(),
+      createSettingsMainModule(),
       createI18nMainModule(),
       createUpdateMainModule(),
     ],

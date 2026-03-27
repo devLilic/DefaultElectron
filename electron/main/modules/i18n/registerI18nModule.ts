@@ -2,7 +2,7 @@ import { app, ipcMain } from 'electron'
 import type { AppConfig } from '../../../../config/types'
 import { ipcInvokeChannels } from '../../../../src/shared/ipc/contracts'
 import { createI18nResources } from '../../../../src/i18n'
-import { createLanguageStorage } from './languageStorage'
+import { createSettingsStore } from '../settings/settingsStore'
 
 let i18nHandlersRegistered = false
 
@@ -13,11 +13,11 @@ export function registerI18nModule(config: AppConfig) {
 
   i18nHandlersRegistered = true
 
-  const languageStorage = createLanguageStorage(app.getPath('userData'))
+  const settingsStore = createSettingsStore(app.getPath('userData'))
 
   ipcMain.handle(ipcInvokeChannels.i18nGetCurrentLanguage, () => {
     return {
-      language: languageStorage.getCurrentLanguage() ?? config.i18n.defaultLanguage,
+      language: settingsStore.getSetting('language') ?? config.i18n.defaultLanguage,
     }
   })
 
@@ -48,7 +48,7 @@ export function registerI18nModule(config: AppConfig) {
 
   ipcMain.handle(ipcInvokeChannels.i18nSetLanguage, (_event, payload) => {
     return {
-      language: languageStorage.setCurrentLanguage(payload.language),
+      language: settingsStore.setSetting('language', payload.language),
     }
   })
 }

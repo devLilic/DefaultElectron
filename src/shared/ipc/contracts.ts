@@ -1,5 +1,6 @@
 import type { ProgressInfo } from 'electron-updater'
 import type { AppConfig, AppLanguage } from '../../../config/types'
+import type { AppSettings, SettingsKey } from '../settings/types'
 import type { UpdateErrorPayload, VersionInfo } from '../types/update'
 
 export const ipcInvokeChannels = {
@@ -68,10 +69,18 @@ export interface DatabaseQueryResult {
   rows: unknown[]
 }
 
-export interface SettingsValuePayload {
-  key: string
-  value?: unknown
+export type SettingsGetRequest = {
+  key: SettingsKey
 }
+
+export type SettingsValuePayload = {
+  [TKey in SettingsKey]: {
+    key: TKey
+    value: AppSettings[TKey]
+  }
+}[SettingsKey]
+
+export type SettingsGetResponse = SettingsValuePayload
 
 export interface IpcInvokeContract {
   [ipcInvokeChannels.appGetInfo]: {
@@ -123,12 +132,12 @@ export interface IpcInvokeContract {
     response: DatabaseQueryResult
   }
   [ipcInvokeChannels.settingsGet]: {
-    request: { key: string }
-    response: SettingsValuePayload
+    request: SettingsGetRequest
+    response: SettingsGetResponse
   }
   [ipcInvokeChannels.settingsSet]: {
     request: SettingsValuePayload
-    response: void
+    response: SettingsValuePayload
   }
 }
 

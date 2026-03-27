@@ -9,8 +9,8 @@ import type {
   LicensingActivationPayload,
   LicensingActivationResult,
   LicensingStatusPayload,
-  SettingsValuePayload,
 } from '@/shared/ipc/contracts'
+import type { UpdatePreferences, UiPreferences } from '@/shared/settings/types'
 import type { ProgressInfo } from 'electron-updater'
 import type { UpdateErrorPayload, VersionInfo } from './update'
 
@@ -45,8 +45,12 @@ declare global {
       query: (payload: DatabaseQueryPayload) => Promise<DatabaseQueryResult>
     }
     settingsApi: {
-      get: (payload: { key: string }) => Promise<SettingsValuePayload>
-      set: (payload: SettingsValuePayload) => Promise<void>
+      getLanguage: () => Promise<import('../../../config/types').AppLanguage | null>
+      setLanguage: (language: import('../../../config/types').AppLanguage | null) => Promise<import('../../../config/types').AppLanguage | null>
+      getUpdatePreferences: () => Promise<UpdatePreferences>
+      setUpdatePreferences: (value: UpdatePreferences) => Promise<UpdatePreferences>
+      getUiPreferences: () => Promise<UiPreferences>
+      setUiPreferences: (value: UiPreferences) => Promise<UiPreferences>
     }
   }
 }
