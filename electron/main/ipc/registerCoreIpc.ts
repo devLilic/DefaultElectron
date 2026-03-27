@@ -1,5 +1,6 @@
 import { app, ipcMain } from 'electron'
 import { indexHtmlPath, VITE_DEV_SERVER_URL } from '../bootstrap/paths'
+import { applyRuntimeSecurityPolicies } from '../security/runtimeSecurity'
 import { createSecureBrowserWindow } from '../security/windowFactory'
 import { ipcInvokeChannels, type IpcInvokeContract } from '../../../src/shared/ipc/contracts'
 import type { AppConfig } from '../../../config/types'
@@ -19,6 +20,7 @@ export function registerCoreIpc(config: AppConfig) {
     const childWindow = createSecureBrowserWindow({
       title: 'Child window',
     })
+    applyRuntimeSecurityPolicies(childWindow)
 
     if (VITE_DEV_SERVER_URL) {
       childWindow.loadURL(`${VITE_DEV_SERVER_URL}#${payload.route}`)

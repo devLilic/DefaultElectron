@@ -67,6 +67,11 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
     enabled: parseBoolean(env.APP_LOGGING_ENABLED) ?? featureLogging,
     level: parseLogLevel(env.APP_LOG_LEVEL),
   })
+  const appProtection = compactObject<Partial<AppConfigOverride['appProtection'] extends infer T ? Extract<T, object> : never>>({
+    enabled: parseBoolean(env.APP_APP_PROTECTION_ENABLED) ?? featureAppProtection,
+    profile: parseAppProtectionProfile(env.APP_APP_PROTECTION_PROFILE),
+    allowDevTools: parseBoolean(env.APP_APP_PROTECTION_ALLOW_DEVTOOLS),
+  })
 
   return compactOverride({
     environment,
@@ -86,10 +91,7 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
       supportedLanguages,
       namespaces,
     }),
-    appProtection: compactObject({
-      enabled: parseBoolean(env.APP_APP_PROTECTION_ENABLED) ?? featureAppProtection,
-      allowDevTools: parseBoolean(env.APP_APP_PROTECTION_ALLOW_DEVTOOLS),
-    }),
+    appProtection,
     licensing: compactObject({
       enabled: parseBoolean(env.APP_LICENSING_ENABLED) ?? featureLicensing,
       publicKey: parseNullableString(env.APP_LICENSING_PUBLIC_KEY),
@@ -100,6 +102,9 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
 }
 
 function normalizeConfig(config: AppConfig): AppConfig {
+  const appProtectionEnabled =
+    config.features.appProtection && (config.appProtection.enabled ?? config.features.appProtection)
+
   return {
     ...config,
     update: {
@@ -112,7 +117,7 @@ function normalizeConfig(config: AppConfig): AppConfig {
     },
     appProtection: {
       ...config.appProtection,
-      enabled: config.appProtection.enabled ?? config.features.appProtection,
+      enabled: appProtectionEnabled,
     },
     licensing: {
       ...config.licensing,
@@ -130,7 +135,7 @@ function normalizeConfig(config: AppConfig): AppConfig {
       ...config.features,
       autoUpdate: config.update.enabled,
       i18n: config.i18n.enabled,
-      appProtection: config.appProtection.enabled,
+      appProtection: appProtectionEnabled,
       licensing: config.licensing.enabled,
       database: config.database.enabled,
       logging: config.logging.enabled,
@@ -255,6 +260,14 @@ function parseLogLevel(value: string | undefined) {
 
 function parseUpdateVisibility(value: string | undefined) {
   if (value === 'public' || value === 'private') {
+    return value
+  }
+
+  return undefined
+}
+
+function parseAppProtectionProfile(value: string | undefined) {
+  if (value === 'standard' || value === 'commercial') {
     return value
   }
 

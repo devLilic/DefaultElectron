@@ -21,6 +21,8 @@ describe('loadConfig', () => {
 
     expect(config.environment).toBe('production')
     expect(config.appProtection.allowDevTools).toBe(false)
+    expect(config.appProtection.enabled).toBe(false)
+    expect(config.appProtection.profile).toBe('standard')
     expect(config.logging.level).toBe('info')
   })
 
@@ -28,6 +30,7 @@ describe('loadConfig', () => {
     const config = loadConfig('production', {
       APP_FEATURE_I18N: 'true',
       APP_FEATURE_AUTO_UPDATE: 'true',
+      APP_FEATURE_APP_PROTECTION: 'true',
       APP_FEATURE_DATABASE: 'true',
       APP_UPDATE_OWNER: 'acme',
       APP_UPDATE_REPO: 'starter',
@@ -38,6 +41,8 @@ describe('loadConfig', () => {
       APP_I18N_NAMESPACES: 'common,settings',
       APP_DATABASE_FILE_NAME: 'starter.sqlite',
       APP_LOG_LEVEL: 'warn',
+      APP_APP_PROTECTION_ENABLED: 'true',
+      APP_APP_PROTECTION_PROFILE: 'commercial',
     })
 
     expect(config.features.i18n).toBe(true)
@@ -49,6 +54,8 @@ describe('loadConfig', () => {
     expect(config.update.provider.repo).toBe('starter')
     expect(config.update.provider.visibility).toBe('private')
     expect(config.i18n.enabled).toBe(true)
+    expect(config.appProtection.enabled).toBe(true)
+    expect(config.appProtection.profile).toBe('commercial')
     expect(config.i18n.defaultLanguage).toBe('ro')
     expect(config.i18n.supportedLanguages).toEqual(['en', 'ro'])
     expect(config.i18n.namespaces).toEqual(['common', 'settings'])
@@ -69,6 +76,7 @@ describe('loadConfig', () => {
     expect(config.environment).toBe('production')
     expect(config.features.appProtection).toBe(false)
     expect(config.appProtection.enabled).toBe(false)
+    expect(config.appProtection.profile).toBe('standard')
     expect(config.features.logging).toBe(true)
     expect(config.logging.enabled).toBe(true)
   })

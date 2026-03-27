@@ -36,6 +36,7 @@ export interface I18nConfig {
 
 export interface AppProtectionConfig {
   enabled: boolean
+  profile: 'standard' | 'commercial'
   allowDevTools: boolean
 }
 

@@ -4,11 +4,13 @@ import { registerAppLifecycle, registerSingleInstance } from './bootstrap/appLif
 import './bootstrap/paths'
 import { registerMainModuleRegistry } from './bootstrap/registerMainModuleRegistry'
 import { createMainWindow } from './bootstrap/createMainWindow'
+import { bootstrapAppProtection } from './security/appProtection'
 import { applyAppSecurity } from './security/appSecurity'
 
 const config = loadConfig()
 
 applyAppSecurity()
+bootstrapAppProtection(config)
 registerSingleInstance()
 
 let mainWindow: BrowserWindow | null = null

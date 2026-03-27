@@ -24,6 +24,7 @@ export const productionConfig: AppConfig = {
   appProtection: {
     ...baseConfig.appProtection,
     enabled: false,
+    profile: 'standard',
     allowDevTools: false,
   },
   licensing: {

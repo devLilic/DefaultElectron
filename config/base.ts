@@ -32,6 +32,7 @@ export const baseConfig: AppConfig = {
   },
   appProtection: {
     enabled: false,
+    profile: 'standard',
     allowDevTools: true,
   },
   licensing: {

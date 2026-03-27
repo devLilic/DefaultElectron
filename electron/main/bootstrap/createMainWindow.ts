@@ -1,5 +1,5 @@
 import { indexHtmlPath, VITE_DEV_SERVER_URL } from './paths'
-import { configureExternalLinks } from '../security/externalLinks'
+import { applyRuntimeSecurityPolicies } from '../security/runtimeSecurity'
 import { createSecureBrowserWindow } from '../security/windowFactory'
 import { ipcEventChannels } from '../../../src/shared/ipc/contracts'
 
@@ -19,7 +19,7 @@ export async function createMainWindow() {
     window.webContents.send(ipcEventChannels.appMainProcessMessage, new Date().toLocaleString())
   })
 
-  configureExternalLinks(window)
+  applyRuntimeSecurityPolicies(window)
 
   return window
 }
