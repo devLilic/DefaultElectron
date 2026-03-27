@@ -1,0 +1,83 @@
+export type AppEnvironment = 'development' | 'production'
+export type AppLanguage = 'en' | 'ro' | 'ru'
+export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug'
+
+export interface FeatureConfig {
+  i18n: boolean
+  autoUpdate: boolean
+  appProtection: boolean
+  licensing: boolean
+  database: boolean
+  logging: boolean
+}
+
+export interface UpdateProviderConfig {
+  provider: 'github'
+  owner: string
+  repo: string
+}
+
+export interface UpdateConfig {
+  enabled: boolean
+  channel: 'latest'
+  autoDownload: boolean
+  allowPrerelease: boolean
+  provider: UpdateProviderConfig
+}
+
+export interface I18nConfig {
+  enabled: boolean
+  defaultLanguage: AppLanguage
+  supportedLanguages: AppLanguage[]
+  namespaces: string[]
+}
+
+export interface AppProtectionConfig {
+  enabled: boolean
+  allowDevTools: boolean
+}
+
+export interface LicensingConfig {
+  enabled: boolean
+  publicKey: string | null
+}
+
+export interface DatabaseConfig {
+  enabled: boolean
+  client: 'better-sqlite3'
+  orm: 'drizzle'
+  fileName: string
+}
+
+export interface LoggingConfig {
+  enabled: boolean
+  level: LogLevel
+}
+
+export interface AppConfig {
+  environment: AppEnvironment
+  appName: string
+  features: FeatureConfig
+  update: UpdateConfig
+  i18n: I18nConfig
+  appProtection: AppProtectionConfig
+  licensing: LicensingConfig
+  database: DatabaseConfig
+  logging: LoggingConfig
+}
+
+export type AppConfigOverride = Partial<{
+  environment: AppEnvironment
+  appName: string
+  features: Partial<FeatureConfig>
+  update: Omit<Partial<UpdateConfig>, 'provider'> & {
+    provider?: Partial<UpdateProviderConfig>
+  }
+  i18n: Partial<I18nConfig>
+  appProtection: Partial<AppProtectionConfig>
+  licensing: Partial<LicensingConfig>
+  database: Partial<DatabaseConfig>
+  logging: Partial<LoggingConfig>
+}>
+
+export type AppEnv = Record<string, string | undefined>
