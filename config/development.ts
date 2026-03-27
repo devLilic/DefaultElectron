@@ -43,6 +43,10 @@ export const developmentConfig: AppConfig = {
   database: {
     ...baseConfig.database,
     enabled: false,
+    provider: 'sqlite',
+    orm: 'drizzle',
+    fileName: 'app.db',
+    inMemoryForTests: false,
   },
   logging: {
     ...baseConfig.logging,

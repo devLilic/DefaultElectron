@@ -60,9 +60,10 @@ export interface LicensingConfig {
 
 export interface DatabaseConfig {
   enabled: boolean
-  client: 'better-sqlite3'
+  provider: 'sqlite'
   orm: 'drizzle'
   fileName: string
+  inMemoryForTests: boolean
 }
 
 export interface LoggingConfig {

@@ -54,9 +54,10 @@ export const baseConfig: AppConfig = {
   },
   database: {
     enabled: false,
-    client: 'better-sqlite3',
+    provider: 'sqlite',
     orm: 'drizzle',
     fileName: 'app.db',
+    inMemoryForTests: false,
   },
   logging: {
     enabled: true,

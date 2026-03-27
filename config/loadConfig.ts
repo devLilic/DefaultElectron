@@ -60,9 +60,10 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
   })
   const database = compactObject<Partial<DatabaseConfig>>({
     enabled: parseBoolean(env.APP_DATABASE_ENABLED) ?? featureDatabase,
-    client: env.APP_DATABASE_CLIENT === 'better-sqlite3' ? 'better-sqlite3' : undefined,
+    provider: parseDatabaseProvider(env.APP_DATABASE_PROVIDER),
     orm: env.APP_DATABASE_ORM === 'drizzle' ? 'drizzle' : undefined,
     fileName: env.APP_DATABASE_FILE_NAME,
+    inMemoryForTests: parseBoolean(env.APP_DATABASE_IN_MEMORY_FOR_TESTS),
   })
   const logging = compactObject<Partial<LoggingConfig>>({
     enabled: parseBoolean(env.APP_LOGGING_ENABLED) ?? featureLogging,
@@ -120,6 +121,8 @@ function normalizeConfig(config: AppConfig): AppConfig {
     config.features.appProtection && (config.appProtection.enabled ?? config.features.appProtection)
   const licensingEnabled =
     config.features.licensing && (config.licensing.enabled ?? config.features.licensing)
+  const databaseEnabled =
+    config.features.database && (config.database.enabled ?? config.features.database)
 
   return {
     ...config,
@@ -141,7 +144,7 @@ function normalizeConfig(config: AppConfig): AppConfig {
     },
     database: {
       ...config.database,
-      enabled: config.database.enabled ?? config.features.database,
+      enabled: databaseEnabled,
     },
     logging: {
       ...config.logging,
@@ -153,7 +156,7 @@ function normalizeConfig(config: AppConfig): AppConfig {
       i18n: config.i18n.enabled,
       appProtection: appProtectionEnabled,
       licensing: licensingEnabled,
-      database: config.database.enabled,
+      database: databaseEnabled,
       logging: config.logging.enabled,
     },
   }
@@ -317,6 +320,16 @@ function parseLicensingProvider(
   value: string | undefined,
 ): LicensingConfig['provider'] | undefined {
   if (value === 'noop' || value === 'mock' || value === 'http') {
+    return value
+  }
+
+  return undefined
+}
+
+function parseDatabaseProvider(
+  value: string | undefined,
+): DatabaseConfig['provider'] | undefined {
+  if (value === 'sqlite') {
     return value
   }
 

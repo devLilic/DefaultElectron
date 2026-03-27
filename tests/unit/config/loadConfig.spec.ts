@@ -9,6 +9,7 @@ describe('loadConfig', () => {
     expect(config.features.autoUpdate).toBe(false)
     expect(config.features.appProtection).toBe(false)
     expect(config.features.licensing).toBe(false)
+    expect(config.features.database).toBe(false)
     expect(config.features.logging).toBe(true)
     expect(config.logging.level).toBe('debug')
     expect(config.licensing.gracePeriodDays).toBe(7)
@@ -25,6 +26,10 @@ describe('loadConfig', () => {
     expect(config.update.autoCheck).toBe(true)
     expect(config.update.autoDownload).toBe(false)
     expect(config.update.provider.visibility).toBe('public')
+    expect(config.database.provider).toBe('sqlite')
+    expect(config.database.orm).toBe('drizzle')
+    expect(config.database.fileName).toBe('app.db')
+    expect(config.database.inMemoryForTests).toBe(false)
   })
 
   it('resolves production config from mode', () => {
@@ -51,7 +56,10 @@ describe('loadConfig', () => {
       APP_I18N_DEFAULT_LANGUAGE: 'ro',
       APP_I18N_SUPPORTED_LANGUAGES: 'en,ro',
       APP_I18N_NAMESPACES: 'common,settings',
+      APP_DATABASE_PROVIDER: 'sqlite',
+      APP_DATABASE_ORM: 'drizzle',
       APP_DATABASE_FILE_NAME: 'starter.sqlite',
+      APP_DATABASE_IN_MEMORY_FOR_TESTS: 'true',
       APP_LOG_LEVEL: 'warn',
       APP_APP_PROTECTION_ENABLED: 'true',
       APP_APP_PROTECTION_PROFILE: 'commercial',
@@ -85,7 +93,10 @@ describe('loadConfig', () => {
     expect(config.i18n.supportedLanguages).toEqual(['en', 'ro'])
     expect(config.i18n.namespaces).toEqual(['common', 'settings'])
     expect(config.database.enabled).toBe(true)
+    expect(config.database.provider).toBe('sqlite')
+    expect(config.database.orm).toBe('drizzle')
     expect(config.database.fileName).toBe('starter.sqlite')
+    expect(config.database.inMemoryForTests).toBe(true)
     expect(config.licensing.enabled).toBe(true)
     expect(config.licensing.publicKey).toBe('pk_live_123')
     expect(config.licensing.gracePeriodDays).toBe(14)
