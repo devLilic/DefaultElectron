@@ -1,6 +1,7 @@
 import { baseConfig } from './base'
 import { developmentConfig } from './development'
 import { productionConfig } from './production'
+import { createConfigLogger, createLogger } from '../electron/main/logging'
 import type {
   AppConfig,
   AppConfigOverride,
@@ -22,12 +23,16 @@ export function loadConfig(
   const environment = resolveEnvironment(mode, env)
   const environmentConfig = environment === 'production' ? productionConfig : developmentConfig
 
-  return normalizeConfig(
+  const config = normalizeConfig(
     mergeConfig(
       mergeConfig(baseConfig, environmentConfig),
       readEnvOverrides(env, environment),
     ),
   )
+
+  createConfigLogger(createLogger({ logging: config.logging }, 'config')).resolved(config)
+
+  return config
 }
 
 function resolveEnvironment(mode: string | undefined, env: AppEnv): AppEnvironment {

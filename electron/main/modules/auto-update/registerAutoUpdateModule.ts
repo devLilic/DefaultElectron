@@ -6,6 +6,7 @@ import type {
   UpdateInfo,
 } from 'electron-updater'
 import type { AppConfig } from '../../../../config/types'
+import { createLogger, createUpdateLogger } from '../../logging'
 import { ipcEventChannels, ipcInvokeChannels } from '../../../../src/shared/ipc/contracts'
 
 const { autoUpdater } = createRequire(import.meta.url)('electron-updater')
@@ -16,6 +17,8 @@ export function registerAutoUpdateModule(
   getMainWindow: () => BrowserWindow | null,
   config: AppConfig,
 ) {
+  const updateLogger = createUpdateLogger(createLogger({ logging: config.logging }, 'updates'))
+
   if (autoUpdateHandlersRegistered) {
     return
   }
@@ -28,6 +31,7 @@ export function registerAutoUpdateModule(
   autoUpdater.allowPrerelease = config.update.allowPrerelease
 
   autoUpdater.on('update-available', (info: UpdateInfo) => {
+    updateLogger.stateChanged('update-available', { version: info.version })
     const payload = {
       update: true,
       version: app.getVersion(),
@@ -42,6 +46,7 @@ export function registerAutoUpdateModule(
   })
 
   autoUpdater.on('update-not-available', (info: UpdateInfo) => {
+    updateLogger.stateChanged('update-not-available', { version: info.version })
     const payload = {
       update: false,
       version: app.getVersion(),
@@ -57,6 +62,7 @@ export function registerAutoUpdateModule(
 
   ipcMain.handle(ipcInvokeChannels.updateCheckForUpdates, async () => {
     if (!config.features.autoUpdate) {
+      updateLogger.disabled('feature-disabled')
       return {
         message: 'Auto update is disabled by configuration.',
         error: new Error('Auto update is disabled by configuration.'),
@@ -64,6 +70,7 @@ export function registerAutoUpdateModule(
     }
 
     if (!app.isPackaged) {
+      updateLogger.disabled('app-not-packaged')
       return {
         message: 'The update feature is only available after packaging.',
         error: new Error('The update feature is only available after packaging.'),
@@ -73,6 +80,7 @@ export function registerAutoUpdateModule(
     try {
       return await autoUpdater.checkForUpdatesAndNotify()
     } catch (error) {
+      updateLogger.failed('checkForUpdates', error)
       return { message: 'Network error', error }
     }
   })
@@ -81,6 +89,7 @@ export function registerAutoUpdateModule(
     startDownload(
       (error, progressInfo) => {
         if (error) {
+          updateLogger.failed('downloadUpdate', error)
           event.sender.send(ipcEventChannels.updateError, { message: error.message, error })
           event.sender.send(ipcEventChannels.updateStateChanged, {
             type: 'error',
@@ -105,6 +114,7 @@ export function registerAutoUpdateModule(
   })
 
   ipcMain.handle(ipcInvokeChannels.updateQuitAndInstall, () => {
+    updateLogger.stateChanged('quit-and-install')
     autoUpdater.quitAndInstall(false, true)
   })
 
