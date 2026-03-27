@@ -207,9 +207,9 @@ Example PowerShell session:
 
 ```powershell
 $env:APP_ENV = "production"
-$env:FEATURE_AUTO_UPDATE = "true"
-$env:FEATURE_APP_PROTECTION = "true"
-$env:FEATURE_LICENSING = "true"
+$env:APP_FEATURE_AUTO_UPDATE = "true"
+$env:APP_FEATURE_APP_PROTECTION = "true"
+$env:APP_FEATURE_LICENSING = "true"
 npm run build
 ```
 

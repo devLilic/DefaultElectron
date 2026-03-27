@@ -69,11 +69,11 @@ export function updateBaseConfig(
   features: FeatureConfig,
 ): string {
   const nextAppConfig = {
-    appName: inputs.displayName,
+    appName: inputs.appName,
     features,
   }
 
-  let nextContent = replaceStringLiteral(baseConfigContent, 'appName', inputs.displayName)
+  let nextContent = replaceStringLiteral(baseConfigContent, 'appName', inputs.appName)
   nextContent = replaceObjectBooleanBlock(nextContent, 'features', features)
   nextContent = replaceBooleanLiteral(nextContent, 'update', 'enabled', features.autoUpdate)
   nextContent = replaceBooleanLiteral(nextContent, 'i18n', 'enabled', features.i18n)

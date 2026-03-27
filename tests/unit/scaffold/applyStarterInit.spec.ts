@@ -82,7 +82,7 @@ describe('applyStarterInit', () => {
     expect(result.packageJson).toContain('"productName": "Acme Desktop"')
     expect(result.packageJson).toContain('"description": "Acme Desktop desktop application."')
     expect(result.electronBuilderJson).toContain('"appId": "com.acme.desktop"')
-    expect(result.baseConfig).toContain("appName: 'Acme Desktop'")
+    expect(result.baseConfig).toContain("appName: 'acme-desktop'")
     expect(result.baseConfig).toContain('i18n: true')
     expect(result.baseConfig).toContain('database: true')
     expect(result.baseConfig).toContain('autoUpdate: false')
