@@ -22,7 +22,16 @@ describe('settings contract', () => {
     const payloads: SettingsValuePayload[] = [
       { key: 'language', value: 'en' },
       { key: 'updatePreferences', value: { autoCheck: true, downloadStrategy: 'manual' } },
-      { key: 'licensingCache', value: { lastValidatedAt: null, licenseKeyHash: null } },
+      {
+        key: 'licensingCache',
+        value: {
+          lastValidatedAt: null,
+          lastHeartbeatAt: null,
+          licenseKeyHash: null,
+          activeLicenseKey: null,
+          installationId: null,
+        },
+      },
       { key: 'uiPreferences', value: { theme: 'dark', density: 'compact' } },
     ]
 

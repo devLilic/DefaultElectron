@@ -11,6 +11,17 @@ describe('loadConfig', () => {
     expect(config.features.licensing).toBe(false)
     expect(config.features.logging).toBe(true)
     expect(config.logging.level).toBe('debug')
+    expect(config.licensing.gracePeriodDays).toBe(7)
+    expect(config.licensing.heartbeatIntervalMs).toBe(21600000)
+    expect(config.licensing.degradedMode).toBe('readonly')
+    expect(config.licensing.provider).toBe('noop')
+    expect(config.licensing.apiBaseUrl).toBeNull()
+    expect(config.licensing.timeoutMs).toBe(5000)
+    expect(config.licensing.endpoints.status).toBe('/licenses/status')
+    expect(config.licensing.endpoints.activate).toBe('/licenses/activate')
+    expect(config.licensing.endpoints.validate).toBe('/licenses/validate')
+    expect(config.licensing.endpoints.heartbeat).toBe('/licenses/heartbeat')
+    expect(config.licensing.endpoints.entitlements).toBe('/licenses/entitlements')
     expect(config.update.autoCheck).toBe(true)
     expect(config.update.autoDownload).toBe(false)
     expect(config.update.provider.visibility).toBe('public')
@@ -32,6 +43,7 @@ describe('loadConfig', () => {
       APP_FEATURE_AUTO_UPDATE: 'true',
       APP_FEATURE_APP_PROTECTION: 'true',
       APP_FEATURE_DATABASE: 'true',
+      APP_FEATURE_LICENSING: 'true',
       APP_UPDATE_OWNER: 'acme',
       APP_UPDATE_REPO: 'starter',
       APP_UPDATE_VISIBILITY: 'private',
@@ -43,6 +55,19 @@ describe('loadConfig', () => {
       APP_LOG_LEVEL: 'warn',
       APP_APP_PROTECTION_ENABLED: 'true',
       APP_APP_PROTECTION_PROFILE: 'commercial',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_PUBLIC_KEY: 'pk_live_123',
+      APP_LICENSING_GRACE_PERIOD_DAYS: '14',
+      APP_LICENSING_HEARTBEAT_INTERVAL_MS: '1800000',
+      APP_LICENSING_DEGRADED_MODE: 'limited',
+      APP_LICENSING_PROVIDER: 'http',
+      APP_LICENSING_API_BASE_URL: 'https://licenses.example.com/',
+      APP_LICENSING_TIMEOUT_MS: '9000',
+      APP_LICENSING_ENDPOINT_STATUS: '/v1/license/status',
+      APP_LICENSING_ENDPOINT_ACTIVATE: '/v1/license/activate',
+      APP_LICENSING_ENDPOINT_VALIDATE: '/v1/license/validate',
+      APP_LICENSING_ENDPOINT_HEARTBEAT: '/v1/license/heartbeat',
+      APP_LICENSING_ENDPOINT_ENTITLEMENTS: '/v1/license/entitlements',
     })
 
     expect(config.features.i18n).toBe(true)
@@ -61,6 +86,19 @@ describe('loadConfig', () => {
     expect(config.i18n.namespaces).toEqual(['common', 'settings'])
     expect(config.database.enabled).toBe(true)
     expect(config.database.fileName).toBe('starter.sqlite')
+    expect(config.licensing.enabled).toBe(true)
+    expect(config.licensing.publicKey).toBe('pk_live_123')
+    expect(config.licensing.gracePeriodDays).toBe(14)
+    expect(config.licensing.heartbeatIntervalMs).toBe(1800000)
+    expect(config.licensing.degradedMode).toBe('limited')
+    expect(config.licensing.provider).toBe('http')
+    expect(config.licensing.apiBaseUrl).toBe('https://licenses.example.com/')
+    expect(config.licensing.timeoutMs).toBe(9000)
+    expect(config.licensing.endpoints.status).toBe('/v1/license/status')
+    expect(config.licensing.endpoints.activate).toBe('/v1/license/activate')
+    expect(config.licensing.endpoints.validate).toBe('/v1/license/validate')
+    expect(config.licensing.endpoints.heartbeat).toBe('/v1/license/heartbeat')
+    expect(config.licensing.endpoints.entitlements).toBe('/v1/license/entitlements')
     expect(config.logging.level).toBe('warn')
   })
 

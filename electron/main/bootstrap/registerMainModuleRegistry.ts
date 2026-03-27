@@ -4,6 +4,7 @@ import { registerMainModules } from '../../../src/shared/modules/registry'
 import { createAutoUpdateMainModule } from '../modules/auto-update/createAutoUpdateMainModule'
 import { createCoreMainModule } from '../modules/core/createCoreMainModule'
 import { createI18nMainModule } from '../modules/i18n/createI18nMainModule'
+import { createLicensingMainModule } from '../modules/licensing/createLicensingMainModule'
 import { createSettingsMainModule } from '../modules/settings/createSettingsMainModule'
 
 export function registerMainModuleRegistry(
@@ -15,6 +16,7 @@ export function registerMainModuleRegistry(
       createCoreMainModule(),
       createSettingsMainModule(),
       createI18nMainModule(),
+      createLicensingMainModule(),
       createAutoUpdateMainModule(),
     ],
     {

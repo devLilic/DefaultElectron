@@ -16,7 +16,10 @@ const defaultSettings: AppSettings = {
   },
   licensingCache: {
     lastValidatedAt: null,
+    lastHeartbeatAt: null,
     licenseKeyHash: null,
+    activeLicenseKey: null,
+    installationId: null,
   },
   uiPreferences: {
     theme: 'system',

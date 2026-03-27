@@ -8,8 +8,10 @@ import type {
   I18nSupportedLanguagesPayload,
   LicensingActivationPayload,
   LicensingActivationResult,
+  LicensingEntitlementsPayload,
   LicensingStatusPayload,
 } from '@/shared/ipc/contracts'
+import type { LicenseEntitlementsResult } from '@/shared/licensing/contracts'
 import type { UpdatePreferences, UiPreferences } from '@/shared/settings/types'
 import type { ProgressInfo } from 'electron-updater'
 import type { UpdateErrorPayload, UpdateStateEvent, VersionInfo } from './update'
@@ -40,7 +42,8 @@ declare global {
     }
     licensingApi: {
       getStatus: () => Promise<LicensingStatusPayload>
-      activate: (payload: LicensingActivationPayload) => Promise<LicensingActivationResult>
+      activateLicense: (payload: LicensingActivationPayload) => Promise<LicensingActivationResult>
+      getEntitlements: (payload: LicensingEntitlementsPayload) => Promise<LicenseEntitlementsResult>
     }
     databaseApi: {
       query: (payload: DatabaseQueryPayload) => Promise<DatabaseQueryResult>

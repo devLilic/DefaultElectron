@@ -30,6 +30,15 @@ export const developmentConfig: AppConfig = {
   licensing: {
     ...baseConfig.licensing,
     enabled: false,
+    gracePeriodDays: 7,
+    heartbeatIntervalMs: 21600000,
+    degradedMode: 'readonly',
+    provider: 'noop',
+    apiBaseUrl: null,
+    timeoutMs: 5000,
+    endpoints: {
+      ...baseConfig.licensing.endpoints,
+    },
   },
   database: {
     ...baseConfig.database,

@@ -43,6 +43,19 @@ export interface AppProtectionConfig {
 export interface LicensingConfig {
   enabled: boolean
   publicKey: string | null
+  gracePeriodDays: number
+  heartbeatIntervalMs: number
+  degradedMode: 'readonly' | 'limited' | 'blocked'
+  provider: 'noop' | 'mock' | 'http'
+  apiBaseUrl: string | null
+  timeoutMs: number
+  endpoints: {
+    status: string
+    activate: string
+    validate: string
+    heartbeat: string
+    entitlements: string
+  }
 }
 
 export interface DatabaseConfig {
@@ -78,7 +91,9 @@ export type AppConfigOverride = Partial<{
   }
   i18n: Partial<I18nConfig>
   appProtection: Partial<AppProtectionConfig>
-  licensing: Partial<LicensingConfig>
+  licensing: Omit<Partial<LicensingConfig>, 'endpoints'> & {
+    endpoints?: Partial<LicensingConfig['endpoints']>
+  }
   database: Partial<DatabaseConfig>
   logging: Partial<LoggingConfig>
 }>

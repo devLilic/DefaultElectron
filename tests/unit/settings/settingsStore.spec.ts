@@ -28,7 +28,10 @@ describe('settings store', () => {
       },
       licensingCache: {
         lastValidatedAt: null,
+        lastHeartbeatAt: null,
         licenseKeyHash: null,
+        activeLicenseKey: null,
+        installationId: null,
       },
       uiPreferences: {
         theme: 'system',
@@ -85,7 +88,10 @@ describe('settings store', () => {
       },
       licensingCache: {
         lastValidatedAt: null,
+        lastHeartbeatAt: null,
         licenseKeyHash: null,
+        activeLicenseKey: null,
+        installationId: null,
       },
       uiPreferences: {
         theme: 'system',

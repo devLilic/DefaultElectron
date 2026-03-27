@@ -1,5 +1,9 @@
 import { contextBridge } from 'electron'
-import { ipcInvokeChannels, type LicensingActivationPayload } from '../../../src/shared/ipc/contracts'
+import {
+  ipcInvokeChannels,
+  type LicensingActivationPayload,
+  type LicensingEntitlementsPayload,
+} from '../../../src/shared/ipc/contracts'
 import { invoke } from './shared'
 
 export function registerLicensingApi() {
@@ -7,8 +11,11 @@ export function registerLicensingApi() {
     getStatus() {
       return invoke(ipcInvokeChannels.licensingGetStatus)
     },
-    activate(payload: LicensingActivationPayload) {
+    activateLicense(payload: LicensingActivationPayload) {
       return invoke(ipcInvokeChannels.licensingActivate, payload)
+    },
+    getEntitlements(payload: LicensingEntitlementsPayload) {
+      return invoke(ipcInvokeChannels.licensingGetEntitlements, payload)
     },
   })
 }

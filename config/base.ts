@@ -38,6 +38,19 @@ export const baseConfig: AppConfig = {
   licensing: {
     enabled: false,
     publicKey: null,
+    gracePeriodDays: 7,
+    heartbeatIntervalMs: 21600000,
+    degradedMode: 'readonly',
+    provider: 'noop',
+    apiBaseUrl: null,
+    timeoutMs: 5000,
+    endpoints: {
+      status: '/licenses/status',
+      activate: '/licenses/activate',
+      validate: '/licenses/validate',
+      heartbeat: '/licenses/heartbeat',
+      entitlements: '/licenses/entitlements',
+    },
   },
   database: {
     enabled: false,

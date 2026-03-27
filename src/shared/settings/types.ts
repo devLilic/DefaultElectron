@@ -7,7 +7,10 @@ export interface UpdatePreferences {
 
 export interface LicensingCache {
   lastValidatedAt: string | null
+  lastHeartbeatAt: string | null
   licenseKeyHash: string | null
+  activeLicenseKey: string | null
+  installationId: string | null
 }
 
 export interface UiPreferences {

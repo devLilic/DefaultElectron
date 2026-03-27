@@ -8,6 +8,7 @@ import type {
   AppLanguage,
   AppEnvironment,
   DatabaseConfig,
+  LicensingConfig,
   LoggingConfig,
   UpdateProviderConfig,
 } from './types'
@@ -95,6 +96,19 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
     licensing: compactObject({
       enabled: parseBoolean(env.APP_LICENSING_ENABLED) ?? featureLicensing,
       publicKey: parseNullableString(env.APP_LICENSING_PUBLIC_KEY),
+      gracePeriodDays: parseNumber(env.APP_LICENSING_GRACE_PERIOD_DAYS),
+      heartbeatIntervalMs: parseNumber(env.APP_LICENSING_HEARTBEAT_INTERVAL_MS),
+      degradedMode: parseLicensingDegradedMode(env.APP_LICENSING_DEGRADED_MODE),
+      provider: parseLicensingProvider(env.APP_LICENSING_PROVIDER),
+      apiBaseUrl: parseNullableString(env.APP_LICENSING_API_BASE_URL),
+      timeoutMs: parseNumber(env.APP_LICENSING_TIMEOUT_MS),
+      endpoints: compactObject({
+        status: env.APP_LICENSING_ENDPOINT_STATUS,
+        activate: env.APP_LICENSING_ENDPOINT_ACTIVATE,
+        validate: env.APP_LICENSING_ENDPOINT_VALIDATE,
+        heartbeat: env.APP_LICENSING_ENDPOINT_HEARTBEAT,
+        entitlements: env.APP_LICENSING_ENDPOINT_ENTITLEMENTS,
+      }),
     }),
     database,
     logging,
@@ -104,6 +118,8 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
 function normalizeConfig(config: AppConfig): AppConfig {
   const appProtectionEnabled =
     config.features.appProtection && (config.appProtection.enabled ?? config.features.appProtection)
+  const licensingEnabled =
+    config.features.licensing && (config.licensing.enabled ?? config.features.licensing)
 
   return {
     ...config,
@@ -121,7 +137,7 @@ function normalizeConfig(config: AppConfig): AppConfig {
     },
     licensing: {
       ...config.licensing,
-      enabled: config.licensing.enabled ?? config.features.licensing,
+      enabled: licensingEnabled,
     },
     database: {
       ...config.database,
@@ -136,7 +152,7 @@ function normalizeConfig(config: AppConfig): AppConfig {
       autoUpdate: config.update.enabled,
       i18n: config.i18n.enabled,
       appProtection: appProtectionEnabled,
-      licensing: config.licensing.enabled,
+      licensing: licensingEnabled,
       database: config.database.enabled,
       logging: config.logging.enabled,
     },
@@ -170,6 +186,10 @@ function mergeConfig(base: AppConfig, override: AppConfigOverride): AppConfig {
     licensing: {
       ...base.licensing,
       ...override.licensing,
+      endpoints: {
+        ...base.licensing.endpoints,
+        ...override.licensing?.endpoints,
+      },
     },
     database: {
       ...base.database,
@@ -258,6 +278,15 @@ function parseLogLevel(value: string | undefined) {
   return undefined
 }
 
+function parseNumber(value: string | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+
+  const parsed = Number.parseInt(value, 10)
+  return Number.isFinite(parsed) ? parsed : undefined
+}
+
 function parseUpdateVisibility(value: string | undefined) {
   if (value === 'public' || value === 'private') {
     return value
@@ -268,6 +297,26 @@ function parseUpdateVisibility(value: string | undefined) {
 
 function parseAppProtectionProfile(value: string | undefined) {
   if (value === 'standard' || value === 'commercial') {
+    return value
+  }
+
+  return undefined
+}
+
+function parseLicensingDegradedMode(
+  value: string | undefined,
+): LicensingConfig['degradedMode'] | undefined {
+  if (value === 'readonly' || value === 'limited' || value === 'blocked') {
+    return value
+  }
+
+  return undefined
+}
+
+function parseLicensingProvider(
+  value: string | undefined,
+): LicensingConfig['provider'] | undefined {
+  if (value === 'noop' || value === 'mock' || value === 'http') {
     return value
   }
 

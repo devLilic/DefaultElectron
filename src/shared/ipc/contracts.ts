@@ -1,5 +1,12 @@
 import type { ProgressInfo } from 'electron-updater'
 import type { AppConfig, AppLanguage } from '../../../config/types'
+import type {
+  LicenseActivationRequest,
+  LicenseActivationResult,
+  LicenseEntitlementsRequest,
+  LicenseEntitlementsResult,
+  LicenseStatusSnapshot,
+} from '../licensing/contracts'
 import type { AppSettings, SettingsKey } from '../settings/types'
 import type { UpdateErrorPayload, UpdateStateEvent, VersionInfo } from '../types/update'
 
@@ -15,6 +22,7 @@ export const ipcInvokeChannels = {
   updateQuitAndInstall: 'update:quit-and-install',
   licensingGetStatus: 'licensing:get-status',
   licensingActivate: 'licensing:activate',
+  licensingGetEntitlements: 'licensing:get-entitlements',
   databaseQuery: 'database:query',
   settingsGet: 'settings:get',
   settingsSet: 'settings:set',
@@ -48,18 +56,11 @@ export interface I18nSupportedLanguagesPayload {
   languages: AppLanguage[]
 }
 
-export interface LicensingStatusPayload {
-  enabled: boolean
-  licensed: boolean
-}
+export type LicensingStatusPayload = LicenseStatusSnapshot
 
-export interface LicensingActivationPayload {
-  key: string
-}
+export type LicensingActivationPayload = LicenseActivationRequest
 
-export interface LicensingActivationResult {
-  success: boolean
-}
+export type LicensingEntitlementsPayload = LicenseEntitlementsRequest
 
 export interface DatabaseQueryPayload {
   sql: string
@@ -126,7 +127,11 @@ export interface IpcInvokeContract {
   }
   [ipcInvokeChannels.licensingActivate]: {
     request: LicensingActivationPayload
-    response: LicensingActivationResult
+    response: LicenseActivationResult
+  }
+  [ipcInvokeChannels.licensingGetEntitlements]: {
+    request: LicensingEntitlementsPayload
+    response: LicenseEntitlementsResult
   }
   [ipcInvokeChannels.databaseQuery]: {
     request: DatabaseQueryPayload
