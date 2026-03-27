@@ -8,6 +8,10 @@ describe('licensing ipc contracts', () => {
   it('defines the approved licensing invoke channels', () => {
     expect(ipcInvokeChannels.licensingGetStatus).toBe('licensing:get-status')
     expect(ipcInvokeChannels.licensingActivate).toBe('licensing:activate')
+    expect(ipcInvokeChannels.licensingRequestReauthorization).toBe(
+      'licensing:request-reauthorization',
+    )
+    expect(ipcInvokeChannels.licensingConfirmRebind).toBe('licensing:confirm-rebind')
     expect(ipcInvokeChannels.licensingGetEntitlements).toBe('licensing:get-entitlements')
   })
 
@@ -18,6 +22,18 @@ describe('licensing ipc contracts', () => {
 
     expect(payload).toEqual({
       key: 'license-key',
+    })
+  })
+
+  it('maps the rebind payload to the explicit confirm rebind channel', () => {
+    const payload: IpcInvokeContract[typeof ipcInvokeChannels.licensingConfirmRebind]['request'] = {
+      key: 'license-key',
+      deviceName: 'Desktop',
+    }
+
+    expect(payload).toEqual({
+      key: 'license-key',
+      deviceName: 'Desktop',
     })
   })
 })

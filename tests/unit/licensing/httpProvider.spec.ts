@@ -14,9 +14,14 @@ describe('http licensing provider policy mapping', () => {
       getStatus: async () => ({
         enabled: true,
         status: 'active' as const,
+        licenseStatus: 'active' as const,
         activated: true,
         validated: true,
         lastValidatedAt: '2026-03-27T12:00:00.000Z',
+        activationId: 'activation-1',
+        activationToken: 'token-1',
+        graceUntil: null,
+        reasonCode: 'none' as const,
         entitlements: {
           items: [
             {
@@ -88,6 +93,13 @@ describe('http licensing provider policy mapping', () => {
     const result = await provider.validate({
       key: 'license-key',
       lastValidatedAt: '2026-03-26T12:00:00.000Z',
+      device: {
+        machineId: 'machine-1',
+        installationId: 'install-1',
+        fingerprintVersion: 'machine-v1',
+        appId: 'com.example.app',
+        appVersion: '1.0.0',
+      },
     })
 
     expect(result.status).toBe('grace-period')
@@ -123,6 +135,13 @@ describe('http licensing provider policy mapping', () => {
     const result = await provider.validate({
       key: 'license-key',
       lastValidatedAt: '2026-03-26T12:00:00.000Z',
+      device: {
+        machineId: 'machine-1',
+        installationId: 'install-1',
+        fingerprintVersion: 'machine-v1',
+        appId: 'com.example.app',
+        appVersion: '1.0.0',
+      },
     })
 
     expect(result.status).toBe('revoked')

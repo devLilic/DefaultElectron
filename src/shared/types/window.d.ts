@@ -7,8 +7,12 @@ import type {
   I18nResourcePayload,
   I18nSupportedLanguagesPayload,
   LicensingActivationPayload,
-  LicensingActivationResult,
+  LicensingActivationResponse,
+  LicensingConfirmRebindPayload,
+  LicensingConfirmRebindResponse,
+  LicensingDegradedModePayload,
   LicensingEntitlementsPayload,
+  LicensingReauthorizationResponse,
   LicensingStatusPayload,
 } from '@/shared/ipc/contracts'
 import type { LicenseEntitlementsResult } from '@/shared/licensing/contracts'
@@ -42,7 +46,10 @@ declare global {
     }
     licensingApi: {
       getStatus: () => Promise<LicensingStatusPayload>
-      activateLicense: (payload: LicensingActivationPayload) => Promise<LicensingActivationResult>
+      getDegradedModeState: () => Promise<LicensingDegradedModePayload>
+      activateLicense: (payload: LicensingActivationPayload) => Promise<LicensingActivationResponse>
+      requestReauthorization: () => Promise<LicensingReauthorizationResponse>
+      confirmRebind: (payload: LicensingConfirmRebindPayload) => Promise<LicensingConfirmRebindResponse>
       getEntitlements: (payload: LicensingEntitlementsPayload) => Promise<LicenseEntitlementsResult>
     }
     databaseApi: {

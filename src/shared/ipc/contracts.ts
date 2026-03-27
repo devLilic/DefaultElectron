@@ -1,10 +1,10 @@
 import type { ProgressInfo } from 'electron-updater'
 import type { AppConfig, AppLanguage } from '../../../config/types'
 import type {
-  LicenseActivationRequest,
   LicenseActivationResult,
   LicenseEntitlementsRequest,
   LicenseEntitlementsResult,
+  LicenseReauthorizationSummary,
   LicenseStatusSnapshot,
 } from '../licensing/contracts'
 import type { AppSettings, SettingsKey } from '../settings/types'
@@ -22,6 +22,8 @@ export const ipcInvokeChannels = {
   updateQuitAndInstall: 'update:quit-and-install',
   licensingGetStatus: 'licensing:get-status',
   licensingActivate: 'licensing:activate',
+  licensingRequestReauthorization: 'licensing:request-reauthorization',
+  licensingConfirmRebind: 'licensing:confirm-rebind',
   licensingGetEntitlements: 'licensing:get-entitlements',
   databaseQuery: 'database:query',
   settingsGet: 'settings:get',
@@ -56,9 +58,25 @@ export interface I18nSupportedLanguagesPayload {
   languages: AppLanguage[]
 }
 
-export type LicensingStatusPayload = LicenseStatusSnapshot
+export type LicensingStatusPayload = Omit<LicenseStatusSnapshot, 'activationToken'>
+export interface LicensingDegradedModePayload {
+  activated: LicensingStatusPayload['activated']
+  validated: LicensingStatusPayload['validated']
+  status: LicensingStatusPayload['status']
+  reasonCode: NonNullable<LicensingStatusPayload['reasonCode']>
+  gracePeriod: LicensingStatusPayload['gracePeriod']
+  degradedMode: LicensingStatusPayload['degradedMode']
+}
 
-export type LicensingActivationPayload = LicenseActivationRequest
+export interface LicensingActivationPayload {
+  key: string
+  deviceName?: string
+}
+
+export type LicensingActivationResponse = Omit<LicenseActivationResult, 'activationToken'>
+export type LicensingReauthorizationResponse = LicenseReauthorizationSummary
+export type LicensingConfirmRebindPayload = LicensingActivationPayload
+export type LicensingConfirmRebindResponse = LicensingActivationResponse
 
 export type LicensingEntitlementsPayload = LicenseEntitlementsRequest
 
@@ -127,7 +145,15 @@ export interface IpcInvokeContract {
   }
   [ipcInvokeChannels.licensingActivate]: {
     request: LicensingActivationPayload
-    response: LicenseActivationResult
+    response: LicensingActivationResponse
+  }
+  [ipcInvokeChannels.licensingRequestReauthorization]: {
+    request: void
+    response: LicensingReauthorizationResponse
+  }
+  [ipcInvokeChannels.licensingConfirmRebind]: {
+    request: LicensingConfirmRebindPayload
+    response: LicensingConfirmRebindResponse
   }
   [ipcInvokeChannels.licensingGetEntitlements]: {
     request: LicensingEntitlementsPayload

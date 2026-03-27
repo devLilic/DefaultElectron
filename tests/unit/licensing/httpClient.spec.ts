@@ -25,9 +25,17 @@ describe('http licensing client', () => {
     })
     const client = new HttpLicensingClient(config, fetchImpl as typeof fetch)
 
-    await client.activateLicense({ key: 'license-key' })
-    await client.validateLicense({ key: 'license-key' })
-    await client.sendHeartbeat({ key: 'license-key', installationId: 'install-1' })
+    const device = {
+      machineId: 'machine-1',
+      installationId: 'install-1',
+      fingerprintVersion: 'machine-v1',
+      appId: 'com.example.app',
+      appVersion: '1.0.0',
+    }
+
+    await client.activateLicense({ key: 'license-key', device })
+    await client.validateLicense({ key: 'license-key', device })
+    await client.sendHeartbeat({ key: 'license-key', device })
     await client.getEntitlements({ key: 'license-key' })
 
     expect(fetchImpl).toHaveBeenNthCalledWith(
@@ -35,7 +43,7 @@ describe('http licensing client', () => {
       'https://licenses.example.com/v1/activate',
       expect.objectContaining({
         method: 'POST',
-        body: JSON.stringify({ key: 'license-key' }),
+        body: JSON.stringify({ key: 'license-key', device }),
       }),
     )
     expect(fetchImpl).toHaveBeenNthCalledWith(
@@ -43,6 +51,7 @@ describe('http licensing client', () => {
       'https://licenses.example.com/v1/validate',
       expect.objectContaining({
         method: 'POST',
+        body: JSON.stringify({ key: 'license-key', device }),
       }),
     )
     expect(fetchImpl).toHaveBeenNthCalledWith(
@@ -50,6 +59,7 @@ describe('http licensing client', () => {
       'https://licenses.example.com/v1/heartbeat',
       expect.objectContaining({
         method: 'POST',
+        body: JSON.stringify({ key: 'license-key', device }),
       }),
     )
     expect(fetchImpl).toHaveBeenNthCalledWith(
@@ -69,9 +79,14 @@ describe('http licensing client', () => {
         json: async () => ({
           enabled: true,
           status: 'active',
+          licenseStatus: 'active',
           activated: true,
           validated: true,
           lastValidatedAt: null,
+          activationId: null,
+          activationToken: null,
+          graceUntil: null,
+          reasonCode: 'none',
           entitlements: {
             items: [],
           },

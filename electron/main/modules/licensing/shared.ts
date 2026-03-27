@@ -5,6 +5,7 @@ import type {
   LicenseEntitlementsResult,
   LicenseGracePeriod,
   LicenseHeartbeatResult,
+  LicenseReasonCode,
   LicenseStatusSnapshot,
   LicenseValidationResult,
 } from '../../../../src/shared/licensing/contracts'
@@ -30,9 +31,14 @@ export function createInactiveLicenseStatus(config: AppConfig): LicenseStatusSna
   return {
     enabled: false,
     status: 'unlicensed',
+    licenseStatus: 'unlicensed',
     activated: false,
     validated: false,
     lastValidatedAt: null,
+    activationId: null,
+    activationToken: null,
+    graceUntil: null,
+    reasonCode: 'none',
     entitlements: {
       items: [],
     },
@@ -49,11 +55,17 @@ export function createActivationFailure(
   config: AppConfig,
   status: LicenseActivationResult['status'],
   reason: string,
+  reasonCode: LicenseReasonCode = 'server_unavailable',
 ): LicenseActivationResult {
   return {
     success: false,
     status,
+    licenseStatus: status,
+    activationId: null,
+    activationToken: null,
     activatedAt: null,
+    graceUntil: null,
+    reasonCode,
     entitlements: {
       items: [],
     },
@@ -70,11 +82,17 @@ export function createValidationFailure(
   config: AppConfig,
   status: LicenseValidationResult['status'],
   reason: string,
+  reasonCode: LicenseReasonCode = 'server_unavailable',
 ): LicenseValidationResult {
   return {
     valid: false,
     status,
+    licenseStatus: status,
+    activationId: null,
+    activationToken: null,
     validatedAt: null,
+    graceUntil: null,
+    reasonCode,
     entitlements: {
       items: [],
     },
@@ -91,12 +109,21 @@ export function createHeartbeatFailure(
   config: AppConfig,
   status: LicenseHeartbeatResult['status'],
   reason: string,
+  reasonCode: LicenseReasonCode = 'server_unavailable',
 ): LicenseHeartbeatResult {
   return {
     ok: false,
     status,
+    licenseStatus: status,
+    activationId: null,
+    activationToken: null,
     heartbeatAt: null,
+    graceUntil: null,
+    reasonCode,
     gracePeriod: createLicenseGracePeriod(config),
+    entitlements: {
+      items: [],
+    },
     degradedMode: {
       active: true,
       mode: config.licensing.degradedMode,

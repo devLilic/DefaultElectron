@@ -25,11 +25,16 @@ describe('settings contract', () => {
       {
         key: 'licensingCache',
         value: {
+          activationToken: null,
+          activationId: null,
+          machineId: null,
+          installationId: null,
           lastValidatedAt: null,
+          graceUntil: null,
+          lastKnownLicenseStatus: null,
           lastHeartbeatAt: null,
           licenseKeyHash: null,
           activeLicenseKey: null,
-          installationId: null,
         },
       },
       { key: 'uiPreferences', value: { theme: 'dark', density: 'compact' } },

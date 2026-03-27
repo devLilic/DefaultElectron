@@ -20,9 +20,14 @@ export class MockLicensingProvider implements LicensingProvider {
     return {
       enabled: true,
       status: 'active' as const,
+      licenseStatus: 'active' as const,
       activated: true,
       validated: true,
       lastValidatedAt: new Date(0).toISOString(),
+      activationId: 'mock-activation-id',
+      activationToken: 'mock-activation-token',
+      graceUntil: null,
+      reasonCode: 'none' as const,
       entitlements: {
         items: [
           {
@@ -48,7 +53,12 @@ export class MockLicensingProvider implements LicensingProvider {
 
   async activate(request: { key: string }) {
     if (!this.config.licensing.enabled || request.key.trim().length === 0) {
-      return createActivationFailure(this.config, 'invalid', 'Mock activation rejected the license key.')
+      return createActivationFailure(
+        this.config,
+        'invalid',
+        'Mock activation rejected the license key.',
+        'invalid_license',
+      )
     }
 
     const status = await this.getStatus()
@@ -56,7 +66,12 @@ export class MockLicensingProvider implements LicensingProvider {
     return {
       success: true,
       status: status.status,
+      licenseStatus: status.status,
+      activationId: status.activationId ?? 'mock-activation-id',
+      activationToken: status.activationToken ?? 'mock-activation-token',
       activatedAt: new Date(0).toISOString(),
+      graceUntil: status.graceUntil ?? null,
+      reasonCode: status.reasonCode ?? 'none',
       entitlements: status.entitlements,
       gracePeriod: status.gracePeriod,
       degradedMode: status.degradedMode,
@@ -73,7 +88,12 @@ export class MockLicensingProvider implements LicensingProvider {
     return {
       valid: true,
       status: status.status,
+      licenseStatus: status.status,
+      activationId: status.activationId ?? 'mock-activation-id',
+      activationToken: status.activationToken ?? 'mock-activation-token',
       validatedAt: status.lastValidatedAt,
+      graceUntil: status.graceUntil ?? null,
+      reasonCode: status.reasonCode ?? 'none',
       entitlements: status.entitlements,
       gracePeriod: status.gracePeriod,
       degradedMode: status.degradedMode,
@@ -88,12 +108,20 @@ export class MockLicensingProvider implements LicensingProvider {
     return {
       ok: true,
       status: 'active' as const,
+      licenseStatus: 'active' as const,
+      activationId: 'mock-activation-id',
+      activationToken: 'mock-activation-token',
       heartbeatAt: new Date(0).toISOString(),
+      graceUntil: null,
+      reasonCode: 'none' as const,
       gracePeriod: {
         active: false,
         startedAt: null,
         endsAt: null,
         remainingDays: this.config.licensing.gracePeriodDays,
+      },
+      entitlements: {
+        items: [],
       },
       degradedMode: {
         active: false,

@@ -3,6 +3,7 @@ import { loadConfig } from '../../../config/loadConfig'
 import {
   createHeartbeatScheduler,
   isHeartbeatSchedulerEnabled,
+  resolveHeartbeatLicensingCacheUpdate,
 } from '../../../electron/main/modules/licensing/heartbeatScheduler'
 import type { LicensingProvider } from '../../../electron/main/modules/licensing/LicensingProvider'
 import type { SettingsStore } from '../../../electron/main/modules/settings/settingsStore'
@@ -63,12 +64,20 @@ describe('heartbeat scheduler runtime', () => {
     const heartbeat = vi.fn(async () => ({
       ok: true,
       status: 'active' as const,
+      licenseStatus: 'active' as const,
+      activationId: null,
+      activationToken: null,
       heartbeatAt: '2026-03-27T12:00:01.000Z',
+      graceUntil: null,
+      reasonCode: 'none' as const,
       gracePeriod: {
         active: false,
         startedAt: null,
         endsAt: null,
         remainingDays: 7,
+      },
+      entitlements: {
+        items: [],
       },
       degradedMode: {
         active: false,
@@ -78,11 +87,16 @@ describe('heartbeat scheduler runtime', () => {
     }))
     const settings = {
       licensingCache: {
+        activationToken: null,
+        activationId: 'activation-1',
+        machineId: 'machine-1',
+        installationId: 'install-1',
         lastValidatedAt: null,
+        graceUntil: null,
+        lastKnownLicenseStatus: 'active' as const,
         lastHeartbeatAt: null,
         licenseKeyHash: null,
         activeLicenseKey: 'license-key',
-        installationId: 'install-1',
       },
     }
     const settingsStore: SettingsStore = {
@@ -117,14 +131,21 @@ describe('heartbeat scheduler runtime', () => {
       getEntitlements: vi.fn(),
     }
 
-    const scheduler = createHeartbeatScheduler(config, provider, settingsStore)
+    const scheduler = createHeartbeatScheduler(config, provider, settingsStore, '1.0.0')
     scheduler.start()
 
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(heartbeat).toHaveBeenCalledWith({
       key: 'license-key',
-      installationId: 'install-1',
+      activationId: 'activation-1',
+      device: {
+        machineId: 'machine-1',
+        installationId: 'install-1',
+        fingerprintVersion: 'machine-v1',
+        appId: config.appName,
+        appVersion: '1.0.0',
+      },
       lastHeartbeatAt: null,
     })
     expect(settings.licensingCache.lastHeartbeatAt).toBe('2026-03-27T12:00:01.000Z')
@@ -132,5 +153,47 @@ describe('heartbeat scheduler runtime', () => {
 
     scheduler.stop()
     vi.useRealTimers()
+  })
+
+  it('does not mutate the original local binding when heartbeat reports a suspicious clone response', () => {
+    const licensingCache = {
+      activationToken: 'token-1',
+      activationId: 'activation-1',
+      machineId: 'machine-1',
+      installationId: 'install-1',
+      lastValidatedAt: '2026-03-26T12:00:00.000Z',
+      graceUntil: '2026-03-28T12:00:00.000Z',
+      lastKnownLicenseStatus: 'active' as const,
+      lastHeartbeatAt: '2026-03-27T10:00:00.000Z',
+      licenseKeyHash: 'hash-1',
+      activeLicenseKey: 'license-key',
+    }
+
+    expect(
+      resolveHeartbeatLicensingCacheUpdate(licensingCache, {
+        ok: false,
+        status: 'degraded',
+        licenseStatus: 'degraded',
+        activationId: 'activation-2',
+        activationToken: 'token-2',
+        heartbeatAt: '2026-03-27T12:00:01.000Z',
+        graceUntil: '2026-03-29T12:00:00.000Z',
+        reasonCode: 'clone_suspected',
+        gracePeriod: {
+          active: false,
+          startedAt: null,
+          endsAt: null,
+          remainingDays: 0,
+        },
+        entitlements: {
+          items: [],
+        },
+        degradedMode: {
+          active: true,
+          mode: 'blocked',
+          reason: 'clone',
+        },
+      }),
+    ).toBeNull()
   })
 })

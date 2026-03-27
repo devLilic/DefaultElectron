@@ -134,9 +134,14 @@ export class HttpLicensingProvider implements LicensingProvider {
     return {
       enabled: true,
       status: policy.status,
+      licenseStatus: policy.status,
       activated: false,
       validated: false,
       lastValidatedAt: lastSuccessfulAt,
+      activationId: null,
+      activationToken: null,
+      graceUntil: policy.gracePeriod.endsAt,
+      reasonCode: mapPolicyStatusToReasonCode(policy.status),
       entitlements: {
         items: [],
       },
@@ -153,7 +158,12 @@ export class HttpLicensingProvider implements LicensingProvider {
     return {
       success: false,
       status: policy.status,
+      licenseStatus: policy.status,
+      activationId: null,
+      activationToken: null,
       activatedAt: null,
+      graceUntil: policy.gracePeriod.endsAt,
+      reasonCode: mapPolicyStatusToReasonCode(policy.status),
       entitlements: {
         items: [],
       },
@@ -174,7 +184,12 @@ export class HttpLicensingProvider implements LicensingProvider {
     return {
       valid: policy.status === 'grace-period',
       status: policy.status,
+      licenseStatus: policy.status,
+      activationId: null,
+      activationToken: null,
       validatedAt: lastSuccessfulAt,
+      graceUntil: policy.gracePeriod.endsAt,
+      reasonCode: mapPolicyStatusToReasonCode(policy.status),
       entitlements: {
         items: [],
       },
@@ -195,11 +210,35 @@ export class HttpLicensingProvider implements LicensingProvider {
     return {
       ok: policy.status === 'grace-period',
       status: policy.status,
+      licenseStatus: policy.status,
+      activationId: null,
+      activationToken: null,
       heartbeatAt: lastSuccessfulAt,
+      graceUntil: policy.gracePeriod.endsAt,
+      reasonCode: mapPolicyStatusToReasonCode(policy.status),
       gracePeriod: policy.gracePeriod,
+      entitlements: {
+        items: [],
+      },
       degradedMode: policy.degradedMode,
     }
   }
+}
+
+function mapPolicyStatusToReasonCode(status: LicenseStatusSnapshot['status']) {
+  if (status === 'expired') {
+    return 'expired' as const
+  }
+
+  if (status === 'revoked') {
+    return 'revoked' as const
+  }
+
+  if (status === 'invalid') {
+    return 'invalid_license' as const
+  }
+
+  return 'none' as const
 }
 
 function toLicensingFailureReason(error: unknown) {
