@@ -26,7 +26,7 @@ export const baseConfig: AppConfig = {
   },
   i18n: {
     enabled: false,
-    defaultLanguage: 'en',
+    defaultLanguage: 'ro',
     supportedLanguages: ['en', 'ro', 'ru'],
     namespaces: ['common', 'settings', 'updater', 'errors'],
   },
@@ -37,6 +37,9 @@ export const baseConfig: AppConfig = {
   },
   licensing: {
     enabled: false,
+    deviceBinding: true,
+    enforceMachineMatch: true,
+    allowGraceOnMismatch: false,
     publicKey: null,
     gracePeriodDays: 7,
     heartbeatIntervalMs: 21600000,

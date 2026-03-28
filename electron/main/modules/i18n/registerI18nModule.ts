@@ -1,7 +1,7 @@
 import { app, ipcMain } from 'electron'
 import type { AppConfig } from '../../../../config/types'
 import { ipcInvokeChannels } from '../../../../src/shared/ipc/contracts'
-import { createI18nResources } from '../../../../src/i18n'
+import { createI18nResources } from '../../../../src/i18n/resources'
 import { createSettingsStore } from '../settings/settingsStore'
 
 let i18nHandlersRegistered = false

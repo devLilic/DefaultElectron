@@ -156,6 +156,11 @@ describe('heartbeat scheduler runtime', () => {
   })
 
   it('does not mutate the original local binding when heartbeat reports a suspicious clone response', () => {
+    const config = loadConfig('production', {
+      APP_FEATURE_LICENSING: 'true',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_HEARTBEAT_INTERVAL_MS: '1000',
+    })
     const licensingCache = {
       activationToken: 'token-1',
       activationId: 'activation-1',
@@ -170,7 +175,7 @@ describe('heartbeat scheduler runtime', () => {
     }
 
     expect(
-      resolveHeartbeatLicensingCacheUpdate(licensingCache, {
+      resolveHeartbeatLicensingCacheUpdate(config, licensingCache, {
         ok: false,
         status: 'degraded',
         licenseStatus: 'degraded',
@@ -195,5 +200,58 @@ describe('heartbeat scheduler runtime', () => {
         },
       }),
     ).toBeNull()
+  })
+
+  it('skips anti-clone heartbeat blocking when device binding is disabled', () => {
+    const config = loadConfig('production', {
+      APP_FEATURE_LICENSING: 'true',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_DEVICE_BINDING: 'false',
+      APP_LICENSING_HEARTBEAT_INTERVAL_MS: '1000',
+    })
+    const licensingCache = {
+      activationToken: 'token-1',
+      activationId: 'activation-1',
+      machineId: 'machine-1',
+      installationId: 'install-1',
+      lastValidatedAt: '2026-03-26T12:00:00.000Z',
+      graceUntil: '2026-03-28T12:00:00.000Z',
+      lastKnownLicenseStatus: 'active' as const,
+      lastHeartbeatAt: '2026-03-27T10:00:00.000Z',
+      licenseKeyHash: 'hash-1',
+      activeLicenseKey: 'license-key',
+    }
+
+    expect(
+      resolveHeartbeatLicensingCacheUpdate(config, licensingCache, {
+        ok: false,
+        status: 'degraded',
+        licenseStatus: 'degraded',
+        activationId: 'activation-2',
+        activationToken: 'token-2',
+        heartbeatAt: '2026-03-27T12:00:01.000Z',
+        graceUntil: '2026-03-29T12:00:00.000Z',
+        reasonCode: 'clone_suspected',
+        gracePeriod: {
+          active: false,
+          startedAt: null,
+          endsAt: null,
+          remainingDays: 0,
+        },
+        entitlements: {
+          items: [],
+        },
+        degradedMode: {
+          active: true,
+          mode: 'blocked',
+          reason: 'clone',
+        },
+      }),
+    ).toMatchObject({
+      activationId: 'activation-2',
+      activationToken: 'token-2',
+      lastHeartbeatAt: '2026-03-27T12:00:01.000Z',
+      lastKnownLicenseStatus: 'degraded',
+    })
   })
 })

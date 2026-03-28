@@ -18,7 +18,8 @@ export async function requestLicenseReauthorization(
   if (
     dependencies.config.environment !== 'production' ||
     !dependencies.config.features.licensing ||
-    !dependencies.config.licensing.enabled
+    !dependencies.config.licensing.enabled ||
+    !dependencies.config.licensing.deviceBinding
   ) {
     return {
       available: false,

@@ -15,6 +15,9 @@ describe('loadConfig', () => {
     expect(config.licensing.gracePeriodDays).toBe(7)
     expect(config.licensing.heartbeatIntervalMs).toBe(21600000)
     expect(config.licensing.degradedMode).toBe('readonly')
+    expect(config.licensing.deviceBinding).toBe(false)
+    expect(config.licensing.enforceMachineMatch).toBe(false)
+    expect(config.licensing.allowGraceOnMismatch).toBe(false)
     expect(config.licensing.provider).toBe('noop')
     expect(config.licensing.apiBaseUrl).toBeNull()
     expect(config.licensing.timeoutMs).toBe(5000)
@@ -39,6 +42,9 @@ describe('loadConfig', () => {
     expect(config.appProtection.allowDevTools).toBe(false)
     expect(config.appProtection.enabled).toBe(false)
     expect(config.appProtection.profile).toBe('standard')
+    expect(config.licensing.deviceBinding).toBe(true)
+    expect(config.licensing.enforceMachineMatch).toBe(true)
+    expect(config.licensing.allowGraceOnMismatch).toBe(false)
     expect(config.logging.level).toBe('info')
   })
 
@@ -64,6 +70,9 @@ describe('loadConfig', () => {
       APP_APP_PROTECTION_ENABLED: 'true',
       APP_APP_PROTECTION_PROFILE: 'commercial',
       APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_DEVICE_BINDING: 'true',
+      APP_LICENSING_ENFORCE_MACHINE_MATCH: 'false',
+      APP_LICENSING_ALLOW_GRACE_ON_MISMATCH: 'true',
       APP_LICENSING_PUBLIC_KEY: 'pk_live_123',
       APP_LICENSING_GRACE_PERIOD_DAYS: '14',
       APP_LICENSING_HEARTBEAT_INTERVAL_MS: '1800000',
@@ -98,6 +107,9 @@ describe('loadConfig', () => {
     expect(config.database.fileName).toBe('starter.sqlite')
     expect(config.database.inMemoryForTests).toBe(true)
     expect(config.licensing.enabled).toBe(true)
+    expect(config.licensing.deviceBinding).toBe(true)
+    expect(config.licensing.enforceMachineMatch).toBe(false)
+    expect(config.licensing.allowGraceOnMismatch).toBe(true)
     expect(config.licensing.publicKey).toBe('pk_live_123')
     expect(config.licensing.gracePeriodDays).toBe(14)
     expect(config.licensing.heartbeatIntervalMs).toBe(1800000)
@@ -128,5 +140,37 @@ describe('loadConfig', () => {
     expect(config.appProtection.profile).toBe('standard')
     expect(config.features.logging).toBe(true)
     expect(config.logging.enabled).toBe(true)
+  })
+
+  it('disables device binding automatically in development even if env overrides request it', () => {
+    const config = loadConfig('development', {
+      APP_FEATURE_LICENSING: 'true',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_DEVICE_BINDING: 'true',
+      APP_LICENSING_ENFORCE_MACHINE_MATCH: 'true',
+      APP_LICENSING_ALLOW_GRACE_ON_MISMATCH: 'true',
+    })
+
+    expect(config.environment).toBe('development')
+    expect(config.licensing.enabled).toBe(true)
+    expect(config.licensing.deviceBinding).toBe(false)
+    expect(config.licensing.enforceMachineMatch).toBe(false)
+    expect(config.licensing.allowGraceOnMismatch).toBe(false)
+  })
+
+  it('allows production to disable device binding explicitly', () => {
+    const config = loadConfig('production', {
+      APP_FEATURE_LICENSING: 'true',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_DEVICE_BINDING: 'false',
+      APP_LICENSING_ENFORCE_MACHINE_MATCH: 'true',
+      APP_LICENSING_ALLOW_GRACE_ON_MISMATCH: 'true',
+    })
+
+    expect(config.environment).toBe('production')
+    expect(config.licensing.enabled).toBe(true)
+    expect(config.licensing.deviceBinding).toBe(false)
+    expect(config.licensing.enforceMachineMatch).toBe(false)
+    expect(config.licensing.allowGraceOnMismatch).toBe(false)
   })
 })

@@ -42,6 +42,9 @@ export interface AppProtectionConfig {
 
 export interface LicensingConfig {
   enabled: boolean
+  deviceBinding: boolean
+  enforceMachineMatch: boolean
+  allowGraceOnMismatch: boolean
   publicKey: string | null
   gracePeriodDays: number
   heartbeatIntervalMs: number

@@ -41,10 +41,15 @@ export async function validateStartupLicenseBinding(
 
   const machineIdentity = await dependencies.machineIdentityProvider.getMachineIdentity()
   const installationId = dependencies.installationIdentityProvider.getInstallationId()
+  const deviceBindingEnabled = isDeviceBindingEnabled(dependencies.config)
 
   if (
-    licensingCache.machineId !== machineIdentity.machineId ||
-    licensingCache.installationId !== installationId
+    deviceBindingEnabled &&
+    (
+      (dependencies.config.licensing.enforceMachineMatch &&
+        licensingCache.machineId !== machineIdentity.machineId) ||
+      licensingCache.installationId !== installationId
+    )
   ) {
     return createAntiCloneStatusSnapshot(
       dependencies.config,
@@ -55,6 +60,7 @@ export async function validateStartupLicenseBinding(
         installationId,
         storedInstallationId: licensingCache.installationId,
         serverStatus:
+          dependencies.config.licensing.enforceMachineMatch &&
           licensingCache.machineId !== machineIdentity.machineId
             ? 'device_mismatch'
             : 'reauthorization_required',
@@ -75,17 +81,19 @@ export async function validateStartupLicenseBinding(
     },
   })
 
-  const antiClone = resolveAntiClonePolicy({
-    currentMachineId: machineIdentity.machineId,
-    storedMachineId: licensingCache.machineId,
-    installationId,
-    storedInstallationId: licensingCache.installationId,
-    serverStatus: mapValidationResultToDeviceStatus(result),
-    graceUntil: result.graceUntil ?? licensingCache.graceUntil,
-  })
+  if (deviceBindingEnabled) {
+    const antiClone = resolveAntiClonePolicy({
+      currentMachineId: machineIdentity.machineId,
+      storedMachineId: licensingCache.machineId,
+      installationId,
+      storedInstallationId: licensingCache.installationId,
+      serverStatus: mapValidationResultToDeviceStatus(result),
+      graceUntil: result.graceUntil ?? licensingCache.graceUntil,
+    })
 
-  if (antiClone.resolution === 'block_clone' || antiClone.resolution === 'require_reactivation') {
-    return createAntiCloneStatusSnapshot(dependencies.config, licensingCache, antiClone)
+    if (antiClone.resolution === 'block_clone' || antiClone.resolution === 'require_reactivation') {
+      return createAntiCloneStatusSnapshot(dependencies.config, licensingCache, antiClone)
+    }
   }
 
   persistValidatedLicensingCache(dependencies.settingsStore, licensingCache, result)
@@ -129,6 +137,10 @@ function isProductionLicensingEnabled(config: AppConfig) {
     config.features.licensing &&
     config.licensing.enabled
   )
+}
+
+function isDeviceBindingEnabled(config: AppConfig) {
+  return isProductionLicensingEnabled(config) && config.licensing.deviceBinding
 }
 
 function hasStartupActivationBinding(cache: LicensingCache): cache is LicensingCache & {
@@ -192,31 +204,38 @@ function createAntiCloneStatusSnapshot(
   antiClone: AntiClonePolicyResult,
 ): LicenseStatusSnapshot {
   const blocked = antiClone.resolution === 'block_clone'
+  const allowGraceOnMismatch =
+    config.licensing.allowGraceOnMismatch &&
+    antiClone.graceActive &&
+    (antiClone.machineMismatch || antiClone.installationMismatch)
+  const status = allowGraceOnMismatch ? 'grace-period' : 'degraded'
+  const validated = allowGraceOnMismatch
+  const reasonCode = allowGraceOnMismatch ? 'none' : mapDeviceValidationStatusToReasonCode(antiClone.status)
 
   return {
     enabled: true,
-    status: 'degraded',
-    licenseStatus: 'degraded',
+    status,
+    licenseStatus: status,
     activated: true,
-    validated: false,
+    validated,
     lastValidatedAt: licensingCache.lastValidatedAt,
     activationId: licensingCache.activationId,
     activationToken: licensingCache.activationToken,
     graceUntil: licensingCache.graceUntil,
-    reasonCode: mapDeviceValidationStatusToReasonCode(antiClone.status),
+    reasonCode,
     entitlements: {
       items: [],
     },
     gracePeriod: {
-      active: false,
+      active: allowGraceOnMismatch,
       startedAt: licensingCache.lastValidatedAt,
       endsAt: licensingCache.graceUntil,
       remainingDays: antiClone.graceActive ? config.licensing.gracePeriodDays : 0,
     },
     degradedMode: {
-      active: true,
+      active: !allowGraceOnMismatch,
       mode: blocked ? 'blocked' : config.licensing.degradedMode,
-      reason: antiClone.reason,
+      reason: allowGraceOnMismatch ? null : antiClone.reason,
     },
   }
 }

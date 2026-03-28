@@ -84,7 +84,7 @@ async function runHeartbeat(
     lastHeartbeatAt: licensingCache.lastHeartbeatAt,
   })
 
-  const nextLicensingCache = resolveHeartbeatLicensingCacheUpdate(licensingCache, result)
+  const nextLicensingCache = resolveHeartbeatLicensingCacheUpdate(config, licensingCache, result)
 
   if (nextLicensingCache) {
     settingsStore.setSetting('licensingCache', nextLicensingCache)
@@ -92,11 +92,27 @@ async function runHeartbeat(
 }
 
 export function resolveHeartbeatLicensingCacheUpdate(
+  config: AppConfig,
   licensingCache: LicensingCache,
   result: LicenseHeartbeatResult,
 ): LicensingCache | null {
   if (!licensingCache.machineId || !licensingCache.installationId) {
     return null
+  }
+
+  if (!config.licensing.deviceBinding) {
+    return {
+      ...licensingCache,
+      activationId: result.activationId ?? licensingCache.activationId,
+      activationToken: result.activationToken ?? licensingCache.activationToken,
+      lastHeartbeatAt: result.heartbeatAt ?? licensingCache.lastHeartbeatAt,
+      lastValidatedAt:
+        result.status === 'active' || result.status === 'grace-period'
+          ? result.heartbeatAt ?? licensingCache.lastValidatedAt
+          : licensingCache.lastValidatedAt,
+      graceUntil: result.graceUntil ?? licensingCache.graceUntil,
+      lastKnownLicenseStatus: result.licenseStatus,
+    }
   }
 
   const antiClone = resolveAntiClonePolicy({

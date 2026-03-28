@@ -285,6 +285,80 @@ describe('startup licensing validation', () => {
       installationId: 'install-1',
     })
   })
+
+  it('skips local anti-clone mismatch enforcement when device binding is disabled', async () => {
+    const config = loadConfig('production', {
+      APP_FEATURE_LICENSING: 'true',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_DEVICE_BINDING: 'false',
+      APP_LICENSING_PROVIDER: 'mock',
+    })
+    const settings = {
+      licensingCache: {
+        activationToken: 'token-1',
+        activationId: 'activation-1',
+        machineId: 'machine-1',
+        installationId: 'install-1',
+        lastValidatedAt: '2026-03-26T12:00:00.000Z',
+        graceUntil: null,
+        lastKnownLicenseStatus: 'active' as const,
+        lastHeartbeatAt: null,
+        licenseKeyHash: 'hash-1',
+        activeLicenseKey: 'license-key',
+      },
+    }
+    const settingsStore = createSettingsStoreStub(settings)
+    const provider: LicensingProvider = {
+      getStatus: vi.fn(),
+      activate: vi.fn(),
+      validate: vi.fn(async () => ({
+        valid: true,
+        status: 'active' as const,
+        licenseStatus: 'active' as const,
+        activationId: 'activation-1',
+        activationToken: 'token-2',
+        validatedAt: '2026-03-27T12:00:00.000Z',
+        graceUntil: null,
+        reasonCode: 'none' as const,
+        entitlements: {
+          items: [],
+        },
+        gracePeriod: {
+          active: false,
+          startedAt: null,
+          endsAt: null,
+          remainingDays: 7,
+        },
+        degradedMode: {
+          active: false,
+          mode: 'none' as const,
+          reason: null,
+        },
+      })),
+      heartbeat: vi.fn(),
+      getEntitlements: vi.fn(),
+    }
+
+    const result = await validateStartupLicenseBinding({
+      config,
+      provider,
+      settingsStore,
+      machineIdentityProvider: createMachineIdentityProviderStub('machine-2'),
+      installationIdentityProvider: createInstallationIdentityProviderStub('install-2'),
+      appVersion: '1.0.0',
+    })
+
+    expect(provider.validate).toHaveBeenCalledTimes(1)
+    expect(result).toMatchObject({
+      status: 'active',
+      validated: true,
+    })
+    expect(settings.licensingCache).toMatchObject({
+      machineId: 'machine-1',
+      installationId: 'install-1',
+      activationToken: 'token-2',
+    })
+  })
 })
 
 function createSettingsStoreStub(settings: {

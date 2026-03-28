@@ -30,6 +30,9 @@ export const developmentConfig: AppConfig = {
   licensing: {
     ...baseConfig.licensing,
     enabled: false,
+    deviceBinding: false,
+    enforceMachineMatch: false,
+    allowGraceOnMismatch: false,
     gracePeriodDays: 7,
     heartbeatIntervalMs: 21600000,
     degradedMode: 'readonly',

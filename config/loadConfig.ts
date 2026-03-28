@@ -101,6 +101,9 @@ function readEnvOverrides(env: AppEnv, environment: AppEnvironment): AppConfigOv
     appProtection,
     licensing: compactObject({
       enabled: parseBoolean(env.APP_LICENSING_ENABLED) ?? featureLicensing,
+      deviceBinding: parseBoolean(env.APP_LICENSING_DEVICE_BINDING),
+      enforceMachineMatch: parseBoolean(env.APP_LICENSING_ENFORCE_MACHINE_MATCH),
+      allowGraceOnMismatch: parseBoolean(env.APP_LICENSING_ALLOW_GRACE_ON_MISMATCH),
       publicKey: parseNullableString(env.APP_LICENSING_PUBLIC_KEY),
       gracePeriodDays: parseNumber(env.APP_LICENSING_GRACE_PERIOD_DAYS),
       heartbeatIntervalMs: parseNumber(env.APP_LICENSING_HEARTBEAT_INTERVAL_MS),
@@ -126,6 +129,8 @@ function normalizeConfig(config: AppConfig): AppConfig {
     config.features.appProtection && (config.appProtection.enabled ?? config.features.appProtection)
   const licensingEnabled =
     config.features.licensing && (config.licensing.enabled ?? config.features.licensing)
+  const deviceBindingEnabled =
+    config.environment === 'production' && config.licensing.deviceBinding
   const databaseEnabled =
     config.features.database && (config.database.enabled ?? config.features.database)
 
@@ -146,6 +151,9 @@ function normalizeConfig(config: AppConfig): AppConfig {
     licensing: {
       ...config.licensing,
       enabled: licensingEnabled,
+      deviceBinding: deviceBindingEnabled,
+      enforceMachineMatch: deviceBindingEnabled && config.licensing.enforceMachineMatch,
+      allowGraceOnMismatch: deviceBindingEnabled && config.licensing.allowGraceOnMismatch,
     },
     database: {
       ...config.database,

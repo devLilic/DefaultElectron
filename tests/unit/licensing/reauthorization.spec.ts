@@ -123,6 +123,40 @@ describe('license reauthorization flow', () => {
       activeLicenseKey: 'new-license-key',
     })
   })
+
+  it('keeps explicit reauthorization unavailable when device binding is disabled', async () => {
+    const config = loadConfig('production', {
+      APP_FEATURE_LICENSING: 'true',
+      APP_LICENSING_ENABLED: 'true',
+      APP_LICENSING_DEVICE_BINDING: 'false',
+      APP_LICENSING_PROVIDER: 'mock',
+    })
+    const settings = createLicensingCacheState({
+      activationToken: 'token-1',
+      activationId: 'activation-1',
+      machineId: 'machine-1',
+      installationId: 'install-1',
+      activeLicenseKey: 'license-key',
+    })
+    const settingsStore = createSettingsStoreStub(settings)
+
+    const result = await requestLicenseReauthorization({
+      config,
+      settingsStore,
+      machineIdentityProvider: createMachineIdentityProviderStub('machine-2'),
+      installationIdentityProvider: createInstallationIdentityProviderStub('install-1'),
+    })
+
+    expect(result).toEqual({
+      available: false,
+      required: false,
+      activated: false,
+      hasStoredActivation: false,
+      machineMismatch: false,
+      installationMismatch: false,
+      reasonCode: 'none',
+    })
+  })
 })
 
 function createLicensingCacheState(overrides?: Partial<LicensingCache>) {
