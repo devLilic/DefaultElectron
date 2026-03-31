@@ -1,9 +1,10 @@
 {
-  "name": "electron-vite-react",
-  "version": "2.2.0",
+  "name": "default-electron-app-template",
+  "productName": "Default Electron App",
+  "version": "0.1.0",
   "main": "dist-electron/main/index.js",
-  "description": "Electron Vite React boilerplate.",
-  "author": "草鞋没号 <308487730@qq.com>",
+  "description": "Template for modular Electron desktop applications.",
+  "author": "devLilic13",
   "license": "MIT",
   "private": true,
   "debug": {

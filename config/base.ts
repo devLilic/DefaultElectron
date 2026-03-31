@@ -2,7 +2,7 @@ import type { AppConfig } from './types'
 
 export const baseConfig: AppConfig = {
   environment: 'development',
-  appName: 'Electron Starter',
+  appName: 'default-electron-app',
   features: {
     i18n: false,
     autoUpdate: false,
@@ -19,8 +19,8 @@ export const baseConfig: AppConfig = {
     allowPrerelease: false,
     provider: {
       provider: 'github',
-      owner: 'electron-vite',
-      repo: 'electron-vite-react',
+      owner: 'YOUR_GITHUB_OWNER',
+      repo: 'YOUR_RELEASE_REPO',
       visibility: 'public',
     },
   },
@@ -28,7 +28,7 @@ export const baseConfig: AppConfig = {
     enabled: false,
     defaultLanguage: 'ro',
     supportedLanguages: ['en', 'ro', 'ru'],
-    namespaces: ['common', 'settings', 'updater', 'errors'],
+    namespaces: ['common', 'settings', 'updater', 'errors', 'licensing'],
   },
   appProtection: {
     enabled: false,

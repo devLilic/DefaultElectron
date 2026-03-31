@@ -79,6 +79,28 @@ The init script updates starter-owned values in:
 - `electron-builder.json`
 - `config/base.ts`
 
+## Template Rules
+
+This repository is a reusable Electron application template.
+
+What should normally change per project:
+- package name
+- product display name
+- app id
+- update repository owner/repo
+- enabled starter modules
+- default language
+- production licensing endpoints
+
+What should normally remain stable:
+- main / preload / renderer separation
+- typed IPC contracts
+- config-driven module enablement
+- TDD-first logic workflow
+- production-only activation for protection and update flows
+- licensing checks handled in Electron main
+- renderer access only through safe preload APIs
+
 ## Project Structure
 
 ```text
@@ -171,7 +193,7 @@ npm test
 npm run test:unit:watch
 ```
 
-Contributor workflow rules are also documented in [DEVELOPMENT_WORKFLOW.md](D:/Apps/default-electron-app/docs/DEVELOPMENT_WORKFLOW.md).
+Contributor workflow rules are also documented in [DEVELOPMENT_WORKFLOW.md](./docs/DEVELOPMENT_WORKFLOW.md).
 
 ## Build
 
@@ -323,5 +345,6 @@ Do not import database internals directly into the renderer.
 
 ## Related Docs
 
-- [DEVELOPMENT_WORKFLOW.md](D:/Apps/default-electron-app/docs/DEVELOPMENT_WORKFLOW.md)
-- [LICENSING_BACKEND_API_CONTRACT.md](D:/Apps/default-electron-app/docs/LICENSING_BACKEND_API_CONTRACT.md)
+- [DEVELOPMENT_WORKFLOW.md](./docs/DEVELOPMENT_WORKFLOW.md)
+- [LICENSING_BACKEND_API_CONTRACT.md](./docs/LICENSING_BACKEND_API_CONTRACT.md)
+- [TEMPLATE_RULES.md](./docs/TEMPLATE_RULES.md)

@@ -69,7 +69,20 @@ Nu începe prin a modifica aleator multe fișiere înainte să fixezi metadatele
 Scriptul de inițializare disponibil este:
 
 ```bash
-npm run init:starter -- --app-name=acme-desktop --app-id=com.acme.desktop --package-name=@acme/desktop --display-name="Acme Desktop" --modules=logging,i18n,database
+npm run init:starter -- 
+  --app-name=my-desktop-app \
+  --app-id=com.mycompany.desktop \
+  --package-name=@mycompany/desktop \
+  --display-name="My Desktop App" \
+  --update-owner=mygithubuser \
+  --update-repo=my-desktop-app-releases \
+  --update-visibility=private \
+  --default-language=ro \
+  --modules=logging,i18n,licensing,appProtection
+```
+intr-o linie: 
+```bash
+npm run init:starter --  --app-name=my-desktop-app  --app-id=com.mycompany.desktop  --package-name=@mycompany/desktop  --display-name="My Desktop App"  --update-owner=mygithubuser  --update-repo=my-desktop-app-releases  --update-visibility=private  --default-language=ro  --modules=logging,i18n,licensing,appProtection
 ```
 
 ### Parametrii Pentru Inițiere

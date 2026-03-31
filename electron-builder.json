@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.example.default-electron-app",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -9,8 +9,11 @@
     "dist-electron",
     "dist"
   ],
+  "extraMetadata": {
+    "main": "dist-electron/main/index.js"
+  },
   "mac": {
-    "artifactName": "${productName}_${version}.${ext}",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
     "target": [
       "dmg",
       "zip"
@@ -25,7 +28,7 @@
         ]
       }
     ],
-    "artifactName": "${productName}_${version}.${ext}"
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
   },
   "nsis": {
     "oneClick": false,
@@ -33,9 +36,12 @@
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
   },
-  "publish": {
-    "provider": "generic",
-    "channel": "latest",
-    "url": "https://github.com/electron-vite/electron-vite-react/releases/download/v0.9.9/"
-  }
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "YOUR_GITHUB_OWNER",
+      "repo": "YOUR_RELEASE_REPO",
+      "releaseType": "release"
+    }
+  ]
 }
