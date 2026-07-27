@@ -1,12 +1,11 @@
 import type { RendererModule } from '@/shared/modules/contracts'
-import { isAutoUpdateEnabled } from '@/shared/auto-update/activation'
 import UpdateFeature from './index'
 
 export function createUpdateRendererModule(): RendererModule {
   return {
     id: 'update',
     isEnabled(config) {
-      return isAutoUpdateEnabled(config)
+      return config.features.autoUpdate && config.environment === 'production'
     },
     component: UpdateFeature,
   }

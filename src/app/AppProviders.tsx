@@ -1,10 +1,10 @@
 import { useEffect, useState, type PropsWithChildren } from 'react'
 import { I18nextProvider } from 'react-i18next'
-import type { AppConfig } from '../../config/types'
+import type { RendererAppConfig } from '@/shared/app/publicConfig'
 import { createI18nInstance, isI18nEnabled, resolveLanguage } from '@/i18n'
 
 interface AppProvidersProps extends PropsWithChildren {
-  config: AppConfig
+  config: RendererAppConfig
 }
 
 export function AppProviders({ children, config }: AppProvidersProps) {

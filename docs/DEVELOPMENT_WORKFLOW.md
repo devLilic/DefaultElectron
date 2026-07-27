@@ -1,5 +1,7 @@
 # Development Workflow
 
+The root [AGENTS.md](../AGENTS.md) is the authoritative AI operating contract. Use its specialist routing, quality gates, and authority rules for all AI-assisted work.
+
 ## Core Rules
 
 - Build the starter module by module.
@@ -43,5 +45,5 @@
 
 - Finish all planned tasks for the module before closing it.
 - Create one clear commit at the end of the module.
-- Push the completed module changes to GitHub.
+- Never push changes to GitHub without explicit user approval.
 - Keep commit messages specific to the module outcome.

@@ -66,6 +66,10 @@ describe('applyStarterInit', () => {
         appId: 'com.acme.desktop',
         packageName: '@acme/desktop',
         displayName: 'Acme Desktop',
+        defaultLanguage: 'ro',
+        updateOwner: 'acme',
+        updateRepo: 'desktop',
+        updateVisibility: 'private',
         initialEnabledModules: ['logging', 'i18n', 'database'],
       },
       {

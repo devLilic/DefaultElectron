@@ -1,4 +1,4 @@
-import type { AppConfig } from '../../../config/types'
+import type { RendererAppConfig } from '../app/publicConfig'
 import type {
   AppInfoPayload,
   DatabaseQueryPayload,
@@ -23,7 +23,7 @@ import type { UpdateErrorPayload, UpdateStateEvent, VersionInfo } from './update
 declare global {
   interface Window {
     appApi: {
-      getConfig: () => AppConfig
+      getConfig: () => RendererAppConfig
       getAppInfo: () => Promise<AppInfoPayload>
       onMainProcessMessage: (listener: (message: string) => void) => () => void
       openWindow: (route: string) => Promise<void>

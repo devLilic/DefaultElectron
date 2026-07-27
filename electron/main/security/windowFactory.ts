@@ -17,6 +17,9 @@ function mergeWithSecureDefaults(
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
       preload: preloadPath,
       ...options.webPreferences,
     },

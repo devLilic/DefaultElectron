@@ -1,5 +1,6 @@
 import type { Resource } from 'i18next'
 import type { AppConfig, AppLanguage, I18nConfig } from '../../config/types'
+import type { RendererAppConfig } from '../shared/app/publicConfig'
 import enCommon from './locales/en/common.json'
 import enErrors from './locales/en/errors.json'
 import enSettings from './locales/en/settings.json'
@@ -16,7 +17,7 @@ import ruUpdater from './locales/ru/updater.json'
 export const i18nNamespaces = ['common', 'settings', 'updater', 'errors'] as const
 export const fallbackLanguage: AppLanguage = 'en'
 
-export function isI18nEnabled(config: AppConfig) {
+export function isI18nEnabled(config: Pick<RendererAppConfig, 'features' | 'i18n'> | AppConfig) {
   return config.features.i18n && config.i18n.enabled
 }
 
@@ -28,7 +29,7 @@ export function isSupportedLanguage(
 }
 
 export function getFallbackLanguage(
-  config: Pick<AppConfig, 'i18n'> | { i18n: I18nConfig },
+  config: Pick<AppConfig, 'i18n'> | Pick<RendererAppConfig, 'i18n'> | { i18n: I18nConfig },
 ): AppLanguage {
   return isSupportedLanguage(config.i18n.defaultLanguage, config.i18n.supportedLanguages)
     ? config.i18n.defaultLanguage
@@ -37,7 +38,7 @@ export function getFallbackLanguage(
 
 export function resolveLanguage(
   language: string | null | undefined,
-  config: Pick<AppConfig, 'i18n'> | { i18n: I18nConfig },
+  config: Pick<AppConfig, 'i18n'> | Pick<RendererAppConfig, 'i18n'> | { i18n: I18nConfig },
 ): AppLanguage {
   if (isSupportedLanguage(language, config.i18n.supportedLanguages)) {
     return language

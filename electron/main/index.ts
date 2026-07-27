@@ -16,7 +16,7 @@ registerSingleInstance()
 let mainWindow: BrowserWindow | null = null
 
 async function bootstrap() {
-  mainWindow = await createMainWindow()
+  mainWindow = await createMainWindow(config)
 
   mainWindow.on('closed', () => {
     mainWindow = null

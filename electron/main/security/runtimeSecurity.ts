@@ -3,9 +3,18 @@ import { URL } from 'node:url'
 import { VITE_DEV_SERVER_URL } from '../bootstrap/paths'
 
 const allowedExternalProtocols = new Set(['https:'])
-const allowedExternalHosts = new Set<string>()
+const allowedExternalHosts = new Set(
+  (process.env.APP_ALLOWED_EXTERNAL_HOSTS ?? '')
+    .split(',')
+    .map((host) => host.trim().toLowerCase())
+    .filter(Boolean),
+)
 
 export function applyRuntimeSecurityPolicies(window: BrowserWindow) {
+  window.webContents.session.setPermissionRequestHandler((_webContents, _permission, callback) => {
+    callback(false)
+  })
+
   window.webContents.setWindowOpenHandler(({ url }) => {
     if (isAllowedExternalUrl(url)) {
       void openExternalUrl(url)
@@ -37,15 +46,19 @@ export function isAllowedExternalUrl(url: string) {
 }
 
 export function isAllowedInAppNavigation(url: string) {
-  if (VITE_DEV_SERVER_URL && url.startsWith(VITE_DEV_SERVER_URL)) {
-    return true
+  if (VITE_DEV_SERVER_URL) {
+    try {
+      return new URL(url).origin === new URL(VITE_DEV_SERVER_URL).origin
+    } catch {
+      return false
+    }
   }
 
   return url === 'about:blank'
 }
 
 export function isAllowedHost(hostname: string) {
-  return allowedExternalHosts.size === 0 || allowedExternalHosts.has(hostname)
+  return allowedExternalHosts.has(hostname.toLowerCase())
 }
 
 export async function openExternalUrl(url: string) {

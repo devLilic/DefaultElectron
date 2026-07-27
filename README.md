@@ -1,5 +1,22 @@
 # Electron Starter
 
+## Minimal default
+
+The default project is Windows-first and enables only the lightweight core (typed IPC, settings and logging). Optional functionality is selected during setup, not required for every product.
+
+```bash
+npm ci
+npm run init:starter
+```
+
+The wizard also supports reproducible input, for example:
+
+```bash
+npm run init:starter -- --app-name=acme --app-id=com.acme.desktop --package-name=@acme/desktop --display-name="Acme Desktop" --modules=logging,i18n
+```
+
+See [optional modules](./docs/MODULES.md) and the [Windows release guide](./docs/RELEASES.md).
+
 Electron application starter built for modular desktop apps with a strict typed boundary between Electron main, preload, and renderer.
 
 This starter is intended to be cloned and initialized into a new product, not used as a demo app. The default architecture favors:

@@ -1,6 +1,7 @@
 import type { BrowserWindow } from 'electron'
 import type { ComponentType } from 'react'
 import type { AppConfig } from '../../../config/types'
+import type { RendererAppConfig } from '../app/publicConfig'
 
 export interface BaseModule {
   id: string
@@ -25,9 +26,10 @@ export interface PreloadModule extends BaseModule {
 }
 
 export interface RendererModuleContext {
-  config: AppConfig
+  config: RendererAppConfig
 }
 
-export interface RendererModule extends BaseModule {
+export interface RendererModule extends Omit<BaseModule, 'isEnabled'> {
+  isEnabled?: (config: RendererAppConfig) => boolean
   component: ComponentType
 }

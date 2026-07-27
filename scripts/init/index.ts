@@ -1,6 +1,7 @@
 import type { StarterFeatureSelection, StarterModuleId } from './types'
 
 export { starterInitInputDefinitions, starterModuleOptions } from './definitions'
+export { starterModuleManifests } from './modules'
 export {
   generateAppId,
   normalizeAppName,

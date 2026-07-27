@@ -1,12 +1,13 @@
 import { contextBridge } from 'electron'
 import type { AppConfig } from '../../../config/types'
 import { ipcEventChannels, ipcInvokeChannels } from '../../../src/shared/ipc/contracts'
+import { toRendererAppConfig } from '../../../src/shared/app/publicConfig'
 import { invoke, subscribe } from './shared'
 
 export function registerAppApi(config: AppConfig) {
   contextBridge.exposeInMainWorld('appApi', {
     getConfig() {
-      return config
+      return toRendererAppConfig(config)
     },
     getAppInfo() {
       return invoke(ipcInvokeChannels.appGetInfo)

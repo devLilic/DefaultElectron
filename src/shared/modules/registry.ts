@@ -7,6 +7,7 @@ import type {
   RendererModule,
 } from './contracts'
 import type { AppConfig } from '../../../config/types'
+import type { RendererAppConfig } from '../app/publicConfig'
 
 export function resolveEnabledModules<T extends BaseModule>(
   modules: T[],
@@ -43,7 +44,7 @@ export function registerPreloadModules(
 
 export function resolveRendererModules(
   modules: RendererModule[],
-  config: AppConfig,
+  config: RendererAppConfig,
 ) {
-  return resolveEnabledModules(modules, config)
+  return modules.filter((module) => module.isEnabled?.(config) ?? true)
 }

@@ -22,6 +22,7 @@ interface PackageJsonShape {
 
 interface ElectronBuilderShape {
   appId: string
+  publish?: Array<{ provider?: string; owner?: string; repo?: string }>
   [key: string]: unknown
 }
 
@@ -60,6 +61,11 @@ export function updateElectronBuilderJson(
 
   electronBuilderJson.appId = inputs.appId
 
+  if (electronBuilderJson.publish?.[0]?.provider === 'github') {
+    electronBuilderJson.publish[0].owner = inputs.updateOwner
+    electronBuilderJson.publish[0].repo = inputs.updateRepo
+  }
+
   return `${JSON.stringify(electronBuilderJson, null, 2)}\n`
 }
 
@@ -76,7 +82,11 @@ export function updateBaseConfig(
   let nextContent = replaceStringLiteral(baseConfigContent, 'appName', inputs.appName)
   nextContent = replaceObjectBooleanBlock(nextContent, 'features', features)
   nextContent = replaceBooleanLiteral(nextContent, 'update', 'enabled', features.autoUpdate)
+  nextContent = replaceNestedStringLiteral(nextContent, 'update', 'owner', inputs.updateOwner)
+  nextContent = replaceNestedStringLiteral(nextContent, 'update', 'repo', inputs.updateRepo)
+  nextContent = replaceNestedStringLiteral(nextContent, 'update', 'visibility', inputs.updateVisibility)
   nextContent = replaceBooleanLiteral(nextContent, 'i18n', 'enabled', features.i18n)
+  nextContent = replaceNestedStringLiteral(nextContent, 'i18n', 'defaultLanguage', inputs.defaultLanguage)
   nextContent = replaceBooleanLiteral(
     nextContent,
     'appProtection',
@@ -146,6 +156,27 @@ export function replaceBooleanLiteral(
   const nextContent = content.replace(blockPattern, `$1${nextBlockBody}$3`)
 
   return nextContent
+}
+
+export function replaceNestedStringLiteral(
+  content: string,
+  objectKey: string,
+  fieldKey: string,
+  value: string,
+): string {
+  const blockPattern = createObjectBlockPattern(objectKey)
+  const match = content.match(blockPattern)
+
+  if (!match) {
+    throw new Error(`Could not locate "${objectKey}" block in base config.`)
+  }
+
+  const nextBlockBody = match[2].replace(
+    new RegExp(`(${fieldKey}:\\s*)'[^']*'`),
+    `$1'${escapeSingleQuotedString(value)}'`,
+  )
+
+  return content.replace(blockPattern, `$1${nextBlockBody}$3`)
 }
 
 export function createObjectBlockPattern(objectKey: string): RegExp {

@@ -1,5 +1,7 @@
 # Codex Project Init Workflow
 
+For AI-assisted work, [AGENTS.md](../AGENTS.md) is authoritative. This guide defines initialization details; it does not override the agent authority, specialist routing, or quality-gate rules.
+
 ## Purpose
 
 This document defines how Codex should work when initializing a new application from this default Electron starter.
@@ -46,7 +48,7 @@ Core stack:
 - Preserve secure Electron architecture boundaries.
 - Prefer typed contracts over ad-hoc patterns.
 - Prefer config-driven behavior over scattered conditionals.
-- Commit and push after each completed module.
+- Create a local commit only when authorized; never push without explicit user approval.
 
 ## New Project Initialization Workflow
 
@@ -163,7 +165,7 @@ Database rule:
 3. Run baseline tests.
 4. Implement or refine modules one by one.
 5. Add or update logic tests.
-6. Commit and push per module.
+6. Commit locally only when authorized; do not push automatically.
 7. Update README and project docs when required.
 
 ## Commit Strategy
@@ -171,7 +173,7 @@ Database rule:
 Each module should end with:
 - validation
 - commit
-- push
+- no push without explicit user approval
 
 Commit messages should be:
 - clear

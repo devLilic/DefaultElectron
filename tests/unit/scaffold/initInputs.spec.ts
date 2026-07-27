@@ -9,12 +9,16 @@ import {
 
 describe('starter init inputs', () => {
   it('defines the required initialization inputs', () => {
-    expect(starterInitInputDefinitions).toHaveLength(5)
+    expect(starterInitInputDefinitions).toHaveLength(9)
     expect(starterInitInputDefinitions.map((definition) => definition.key)).toEqual([
       'appName',
       'appId',
       'packageName',
       'displayName',
+      'defaultLanguage',
+      'updateOwner',
+      'updateRepo',
+      'updateVisibility',
       'initialEnabledModules',
     ])
   })

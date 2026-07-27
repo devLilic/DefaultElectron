@@ -39,9 +39,13 @@ describe('starter init transform helpers', () => {
     ).toEqual({
       appName: 'acme-desktop-app',
       appId: 'com.example.acme.desktopapp',
-      packageName: '@acme/desktop-app',
-      displayName: 'Acme Desktop App',
-      initialEnabledModules: ['logging'],
+        packageName: '@acme/desktop-app',
+        displayName: 'Acme Desktop App',
+        defaultLanguage: 'ro',
+        updateOwner: 'YOUR_GITHUB_OWNER',
+        updateRepo: 'YOUR_RELEASE_REPO',
+        updateVisibility: 'public',
+        initialEnabledModules: ['logging'],
     })
   })
 })

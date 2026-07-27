@@ -1,6 +1,6 @@
 import { createInstance, type i18n as I18nInstance } from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import type { AppConfig } from '../../config/types'
+import type { RendererAppConfig } from '../shared/app/publicConfig'
 export {
   createI18nResources,
   fallbackLanguage,
@@ -12,7 +12,7 @@ export {
 } from './resources'
 import { createI18nResources, getFallbackLanguage } from './resources'
 
-export function createI18nInstance(config: AppConfig): I18nInstance {
+export function createI18nInstance(config: RendererAppConfig): I18nInstance {
   const instance = createInstance()
   const resolvedFallbackLanguage = getFallbackLanguage(config)
 

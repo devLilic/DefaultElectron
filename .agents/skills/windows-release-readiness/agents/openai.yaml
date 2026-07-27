@@ -1,0 +1,4 @@
+interface:
+  display_name: "Windows Release Readiness"
+  short_description: "Prepare safe Windows releases"
+  default_prompt: "Use $windows-release-readiness to prepare this Windows release."

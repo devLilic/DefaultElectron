@@ -22,6 +22,10 @@ export interface StarterInitInputValues {
   appId: string
   packageName: string
   displayName: string
+  defaultLanguage: 'en' | 'ro' | 'ru'
+  updateOwner: string
+  updateRepo: string
+  updateVisibility: 'public' | 'private'
   initialEnabledModules: StarterModuleId[]
 }
 

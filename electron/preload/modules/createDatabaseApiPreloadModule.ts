@@ -4,6 +4,9 @@ import { registerDatabaseApi } from './databaseApi'
 export function createDatabaseApiPreloadModule(): PreloadModule {
   return {
     id: 'database-api',
+    isEnabled(config) {
+      return config.features.database && config.database.enabled
+    },
     register() {
       registerDatabaseApi()
     },

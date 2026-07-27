@@ -1,0 +1,4 @@
+interface:
+  display_name: "Electron Feature Delivery"
+  short_description: "Build safe Electron features"
+  default_prompt: "Use $electron-feature-delivery to implement this Electron feature safely."

@@ -5,6 +5,10 @@ export interface StarterInitPartialInputValues {
   appId?: string
   packageName?: string
   displayName?: string
+  defaultLanguage?: StarterInitInputValues['defaultLanguage']
+  updateOwner?: string
+  updateRepo?: string
+  updateVisibility?: StarterInitInputValues['updateVisibility']
   initialEnabledModules: StarterInitInputValues['initialEnabledModules']
 }
 
@@ -57,6 +61,10 @@ export function resolveStarterInitValues(
     appId,
     packageName,
     displayName,
+    defaultLanguage: inputs.defaultLanguage ?? 'ro',
+    updateOwner: inputs.updateOwner?.trim() || 'YOUR_GITHUB_OWNER',
+    updateRepo: inputs.updateRepo?.trim() || 'YOUR_RELEASE_REPO',
+    updateVisibility: inputs.updateVisibility ?? 'public',
     initialEnabledModules: inputs.initialEnabledModules,
   }
 }

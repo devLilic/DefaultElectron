@@ -17,6 +17,10 @@ export function registerCoreIpc(config: AppConfig) {
   ipcMain.handle(
     ipcInvokeChannels.appOpenWindow,
     (_event, payload: IpcInvokeContract[typeof ipcInvokeChannels.appOpenWindow]['request']) => {
+    if (!isSafeInternalRoute(payload?.route)) {
+      throw new Error('Invalid internal route.')
+    }
+
     const childWindow = createSecureBrowserWindow({
       title: 'Child window',
     })
@@ -30,4 +34,8 @@ export function registerCoreIpc(config: AppConfig) {
       childWindow.loadFile(indexHtmlPath, { hash: payload.route })
     },
   )
+}
+
+function isSafeInternalRoute(route: unknown): route is string {
+  return typeof route === 'string' && route.length <= 120 && /^\/?[a-z0-9/_-]*$/i.test(route)
 }

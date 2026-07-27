@@ -1,0 +1,4 @@
+interface:
+  display_name: "Electron Quality Gate"
+  short_description: "Verify Electron changes rigorously"
+  default_prompt: "Use $electron-quality-gate to validate this Electron change."
