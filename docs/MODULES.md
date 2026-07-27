@@ -8,7 +8,7 @@ Set the default and supported languages in `.env.production.example`; user-facin
 
 ## Database
 
-Uses SQLite through Drizzle. Install with the Node version in `.node-version`, then run `npm rebuild better-sqlite3` after changing Node versions.
+Uses SQLite through Drizzle. Install with Node 22.18.x from `.node-version` or `.nvmrc`. If the Node version changes, remove `node_modules`, select Node 22.18.x again, run `npm ci`, then run `npm rebuild better-sqlite3` only when needed.
 
 ## Auto update
 

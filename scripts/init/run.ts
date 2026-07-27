@@ -2,11 +2,11 @@ import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'
-import { applyStarterInit } from './applyStarterInit'
-import { starterModuleManifests } from './modules'
-import { resolveStarterFeatureSelection } from './index'
-import { resolveStarterInitValues, type StarterInitPartialInputValues } from './transform'
-import { starterModuleIds, type StarterModuleId } from './types'
+import { applyStarterInit } from './applyStarterInit.ts'
+import { starterModuleManifests } from './modules.ts'
+import { resolveStarterFeatureSelection } from './index.ts'
+import { resolveStarterInitValues, type StarterInitPartialInputValues } from './transform.ts'
+import { starterModuleIds, type StarterModuleId } from './types.ts'
 
 export function parseInitArgs(argv: string[]): StarterInitPartialInputValues & {
   updateOwner?: string

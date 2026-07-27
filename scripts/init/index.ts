@@ -1,14 +1,14 @@
-import type { StarterFeatureSelection, StarterModuleId } from './types'
+import type { StarterFeatureSelection, StarterModuleId } from './types.ts'
 
-export { starterInitInputDefinitions, starterModuleOptions } from './definitions'
-export { starterModuleManifests } from './modules'
+export { starterInitInputDefinitions, starterModuleOptions } from './definitions.ts'
+export { starterModuleManifests } from './modules.ts'
 export {
   generateAppId,
   normalizeAppName,
   normalizeDisplayName,
   normalizePackageName,
   resolveStarterInitValues,
-} from './transform'
+} from './transform.ts'
 export type {
   StarterFeatureSelection,
   StarterInitInputDefinition,
@@ -16,8 +16,8 @@ export type {
   StarterInitInputValues,
   StarterModuleId,
   StarterModuleOption,
-} from './types'
-export { starterModuleIds } from './types'
+} from './types.ts'
+export { starterModuleIds } from './types.ts'
 
 export function resolveStarterFeatureSelection(
   enabledModules: readonly StarterModuleId[],

@@ -4,6 +4,8 @@
 
 The default project is Windows-first and enables only the lightweight core (typed IPC, settings and logging). Optional functionality is selected during setup, not required for every product.
 
+> **Required runtime:** Node.js `22.18.x`. `npm ci` rejects other Node versions before native packages are installed, because SQLite uses a native binary. On Windows, run `nvm install 22.18.0` and `nvm use 22.18.0` before `npm ci`.
+
 ```bash
 npm ci
 npm run init:starter
@@ -51,16 +53,16 @@ This starter is intended to be cloned and initialized into a new product, not us
 
 ## Prerequisites
 
-- Node.js 20+
+- Node.js 22.18.x (see `.node-version` or `.nvmrc`)
 - npm 10+
 - Git
 
-For native dependencies such as `better-sqlite3`, use a normal local Node toolchain that can install native modules on your OS.
+For native dependencies such as `better-sqlite3`, use exactly Node 22.18.x. Do not use Node 25 unless the template explicitly adds support for it.
 
 ## Install And Run
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
