@@ -27,7 +27,7 @@
     "test:unit:watch": "vitest --config vitest.config.ts"
   },
   "dependencies": {
-    "better-sqlite3": "^13.0.1",
+    "better-sqlite3": "^13.0.2",
     "drizzle-orm": "^0.45.2",
     "electron-updater": "^6.8.9",
     "i18next": "^26.3.6",
