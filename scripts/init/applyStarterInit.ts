@@ -3,12 +3,14 @@ import type { StarterInitInputValues } from './types'
 
 export interface StarterInitFiles {
   packageJson: string
+  packageLockJson: string
   electronBuilderJson: string
   baseConfig: string
 }
 
 export interface StarterInitResult {
   packageJson: string
+  packageLockJson: string
   electronBuilderJson: string
   baseConfig: string
 }
@@ -33,9 +35,25 @@ export function applyStarterInit(
 ): StarterInitResult {
   return {
     packageJson: updatePackageJson(files.packageJson, inputs),
+    packageLockJson: updatePackageLockJson(files.packageLockJson, inputs),
     electronBuilderJson: updateElectronBuilderJson(files.electronBuilderJson, inputs),
     baseConfig: updateBaseConfig(files.baseConfig, inputs, features),
   }
+}
+
+export function updatePackageLockJson(
+  packageLockJsonContent: string,
+  inputs: StarterInitInputValues,
+): string {
+  const packageLock = JSON.parse(packageLockJsonContent) as {
+    name?: string
+    packages?: Record<string, { name?: string }>
+  }
+
+  packageLock.name = inputs.packageName
+  if (packageLock.packages?.['']) packageLock.packages[''].name = inputs.packageName
+
+  return `${JSON.stringify(packageLock, null, 2)}\n`
 }
 
 export function updatePackageJson(
@@ -109,7 +127,9 @@ export function replaceStringLiteral(content: string, key: string, value: string
   )
 
   if (nextContent === content) {
-    throw new Error(`Could not update "${key}" in base config.`)
+    if (!new RegExp(`(${key}:\\s*)'[^']*'`).test(content)) {
+      throw new Error(`Could not update "${key}" in base config.`)
+    }
   }
 
   return nextContent

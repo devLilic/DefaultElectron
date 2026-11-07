@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { createInterface } from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'
 import { applyStarterInit } from './applyStarterInit.ts'
@@ -133,26 +134,29 @@ async function main() {
   const initInputs = resolveStarterInitValues(partialInputs)
   validateInitInputs(initInputs)
   const root = path.resolve(import.meta.dirname, '..', '..')
-  const [packageJson, electronBuilderJson, baseConfig] = await Promise.all([
+  const [packageJson, packageLockJson, electronBuilderJson, baseConfig] = await Promise.all([
     readFile(path.join(root, 'package.json'), 'utf8'),
+    readFile(path.join(root, 'package-lock.json'), 'utf8'),
     readFile(path.join(root, 'electron-builder.json'), 'utf8'),
     readFile(path.join(root, 'config', 'base.ts'), 'utf8'),
   ])
   const result = applyStarterInit(
-    { packageJson, electronBuilderJson, baseConfig },
+    { packageJson, packageLockJson, electronBuilderJson, baseConfig },
     initInputs,
     resolveStarterFeatureSelection(initInputs.initialEnabledModules),
   )
 
   await Promise.all([
     writeFile(path.join(root, 'package.json'), result.packageJson),
+    writeFile(path.join(root, 'package-lock.json'), result.packageLockJson),
     writeFile(path.join(root, 'electron-builder.json'), result.electronBuilderJson),
     writeFile(path.join(root, 'config', 'base.ts'), result.baseConfig),
   ])
   output.write(`${renderSetupSummary(initInputs)}\n`)
 }
 
-if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, '/')}`) {
+const invokedPath = process.argv[1]
+if (invokedPath && import.meta.url === pathToFileURL(path.resolve(invokedPath)).href) {
   void main().catch((error: unknown) => {
     output.write(`${error instanceof Error ? error.message : String(error)}\n`)
     process.exitCode = 1

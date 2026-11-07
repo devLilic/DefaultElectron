@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import {
   createMachineIdentityProvider,
@@ -7,6 +7,8 @@ import {
   normalizeHostname,
   normalizeMacAddresses,
 } from '../../../electron/main/modules/licensing/device-identity'
+
+vi.mock('electron', () => ({}))
 
 describe('machine identity generation', () => {
   it('normalizes hostname and mac address inputs deterministically', () => {

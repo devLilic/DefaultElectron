@@ -8,7 +8,7 @@ Set the default and supported languages in `.env.production.example`; user-facin
 
 ## Database
 
-Uses SQLite through Drizzle. Install with Node 22.18.x from `.node-version` or `.nvmrc`. If the Node version changes, remove `node_modules`, select Node 22.18.x again, run `npm ci`, then run `npm rebuild better-sqlite3` only when needed.
+Uses Node's built-in `node:sqlite` driver through Drizzle. SQLite runs in Electron main and stores its database under the app's user data directory. The connection enables foreign keys and write-ahead logging for file-backed databases. Local tests use Node 24 LTS, and packaged apps use Electron's bundled Node runtime.
 
 ## Auto update
 

@@ -9,6 +9,15 @@ const packageJsonFixture = `{
 }
 `
 
+const packageLockFixture = `{
+  "name": "electron-vite-react",
+  "lockfileVersion": 3,
+  "packages": {
+    "": { "name": "electron-vite-react" }
+  }
+}
+`
+
 const electronBuilderFixture = `{
   "appId": "YourAppID",
   "publish": {
@@ -58,6 +67,7 @@ describe('applyStarterInit', () => {
     const result = applyStarterInit(
       {
         packageJson: packageJsonFixture,
+        packageLockJson: packageLockFixture,
         electronBuilderJson: electronBuilderFixture,
         baseConfig: baseConfigFixture,
       },
@@ -85,6 +95,8 @@ describe('applyStarterInit', () => {
     expect(result.packageJson).toContain('"name": "@acme/desktop"')
     expect(result.packageJson).toContain('"productName": "Acme Desktop"')
     expect(result.packageJson).toContain('"description": "Acme Desktop desktop application."')
+    expect(JSON.parse(result.packageLockJson).name).toBe('@acme/desktop')
+    expect(JSON.parse(result.packageLockJson).packages[''].name).toBe('@acme/desktop')
     expect(result.electronBuilderJson).toContain('"appId": "com.acme.desktop"')
     expect(result.baseConfig).toContain("appName: 'acme-desktop'")
     expect(result.baseConfig).toContain('i18n: true')
@@ -92,5 +104,35 @@ describe('applyStarterInit', () => {
     expect(result.baseConfig).toContain('autoUpdate: false')
     expect(result.baseConfig).toContain('update: {\n    enabled: false,')
     expect(result.baseConfig).toContain('database: {\n    enabled: true,')
+
+    expect(
+      applyStarterInit(
+        {
+          packageJson: result.packageJson,
+          packageLockJson: result.packageLockJson,
+          electronBuilderJson: result.electronBuilderJson,
+          baseConfig: result.baseConfig,
+        },
+        {
+          appName: 'acme-desktop',
+          appId: 'com.acme.desktop',
+          packageName: '@acme/desktop',
+          displayName: 'Acme Desktop',
+          defaultLanguage: 'ro',
+          updateOwner: 'acme',
+          updateRepo: 'desktop',
+          updateVisibility: 'private',
+          initialEnabledModules: ['logging', 'i18n', 'database'],
+        },
+        {
+          i18n: true,
+          autoUpdate: false,
+          appProtection: false,
+          licensing: false,
+          database: true,
+          logging: true,
+        },
+      ),
+    ).toEqual(result)
   })
 })

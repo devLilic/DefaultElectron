@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { loadConfig } from '../../../config/loadConfig'
+import { baseConfig } from '../../../config/base'
 
 describe('loadConfig', () => {
   it('resolves development config by default', () => {
@@ -9,8 +10,9 @@ describe('loadConfig', () => {
     expect(config.features.autoUpdate).toBe(false)
     expect(config.features.appProtection).toBe(false)
     expect(config.features.licensing).toBe(false)
-    expect(config.features.database).toBe(false)
-    expect(config.features.logging).toBe(true)
+    expect(config.features.database).toBe(baseConfig.features.database && baseConfig.database.enabled)
+    expect(config.features.i18n).toBe(baseConfig.i18n.enabled)
+    expect(config.features.logging).toBe(baseConfig.logging.enabled)
     expect(config.logging.level).toBe('debug')
     expect(config.licensing.gracePeriodDays).toBe(7)
     expect(config.licensing.heartbeatIntervalMs).toBe(21600000)
@@ -28,7 +30,7 @@ describe('loadConfig', () => {
     expect(config.licensing.endpoints.entitlements).toBe('/licenses/entitlements')
     expect(config.update.autoCheck).toBe(true)
     expect(config.update.autoDownload).toBe(false)
-    expect(config.update.provider.visibility).toBe('public')
+    expect(config.update.provider.visibility).toBe(baseConfig.update.provider.visibility)
     expect(config.database.provider).toBe('sqlite')
     expect(config.database.orm).toBe('drizzle')
     expect(config.database.fileName).toBe('app.db')
@@ -46,6 +48,9 @@ describe('loadConfig', () => {
     expect(config.licensing.enforceMachineMatch).toBe(true)
     expect(config.licensing.allowGraceOnMismatch).toBe(false)
     expect(config.logging.level).toBe('info')
+    expect(config.features.database).toBe(baseConfig.features.database && baseConfig.database.enabled)
+    expect(config.features.i18n).toBe(baseConfig.i18n.enabled)
+    expect(config.features.logging).toBe(baseConfig.logging.enabled)
   })
 
   it('applies feature and nested env overrides', () => {

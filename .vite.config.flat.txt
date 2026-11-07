@@ -2,9 +2,9 @@ import { rmSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import electron from 'vite-plugin-electron'
-import renderer from 'vite-plugin-electron-renderer'
-import pkg from './package.json'
+import pkg from './package.json' with { type: 'json' }
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -17,11 +17,12 @@ export default defineConfig(({ command }) => {
   return {
     resolve: {
       alias: {
-        '@': path.join(__dirname, 'src')
+        '@': path.join(import.meta.dirname, 'src')
       },
     },
     plugins: [
       react(),
+      tailwindcss(),
       electron([
         {
           // Main-Process entry file of the Electron App.
@@ -38,7 +39,7 @@ export default defineConfig(({ command }) => {
               sourcemap,
               minify: isBuild,
               outDir: 'dist-electron/main',
-              rollupOptions: {
+              rolldownOptions: {
                 external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
               },
             },
@@ -56,15 +57,16 @@ export default defineConfig(({ command }) => {
               sourcemap: sourcemap ? 'inline' : undefined, // #332
               minify: isBuild,
               outDir: 'dist-electron/preload',
-              rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+              rolldownOptions: {
+                output: {
+                  format: 'cjs',
+                  entryFileNames: '[name].cjs',
+                },
               },
             },
           },
         }
       ]),
-      // Use Node.js API in the Renderer-process
-      renderer(),
     ],
     server: process.env.VSCODE_DEBUG && (() => {
       const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)

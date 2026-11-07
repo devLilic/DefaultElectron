@@ -4,11 +4,11 @@
 
 The default project is Windows-first and enables only the lightweight core (typed IPC, settings and logging). Optional functionality is selected during setup, not required for every product.
 
-> **Required runtime:** Node.js `22.18.x`. `npm ci` rejects other Node versions before native packages are installed, because SQLite uses a native binary. On Windows, run `nvm install 22.18.0` and `nvm use 22.18.0` before `npm ci`.
+> **Required runtime:** Node.js 24 LTS (24.20.0 or newer within the 24.x series). On Windows with nvm-windows, run `nvm install 24.20.0` and `nvm use 24.20.0`.
 
 ```bash
-npm ci
 npm run init:starter
+npm ci
 ```
 
 The wizard also supports reproducible input, for example:
@@ -53,11 +53,9 @@ This starter is intended to be cloned and initialized into a new product, not us
 
 ## Prerequisites
 
-- Node.js 22.18.x (see `.node-version` or `.nvmrc`)
+- Node.js 24 LTS (see `.node-version` or `.nvmrc`)
 - npm 10+
 - Git
-
-For native dependencies such as `better-sqlite3`, use exactly Node 22.18.x. Do not use Node 25 unless the template explicitly adds support for it.
 
 ## Install And Run
 
@@ -77,8 +75,8 @@ npm run build
 ## Start A New Project From This Starter
 
 1. Clone this repository.
-2. Install dependencies with `npm install`.
-3. Run the starter init script with your project values.
+2. Run the starter init script with your project values.
+3. Run `npm ci` to install the locked dependencies and `npm run dev` to start the app.
 
 Example:
 
@@ -95,6 +93,7 @@ Init inputs:
 
 The init script updates starter-owned values in:
 - `package.json`
+- `package-lock.json`
 - `electron-builder.json`
 - `config/base.ts`
 

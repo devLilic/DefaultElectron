@@ -18,7 +18,7 @@ export function createAppMetadataRepository(
 ): AppMetadataRepository {
   return {
     async getByKey(key) {
-      const record = connection.db
+      const record = await connection.db
         .select()
         .from(appMetadata)
         .where(eq(appMetadata.key, key))
@@ -35,7 +35,7 @@ export function createAppMetadataRepository(
       }
     },
     async upsert(record) {
-      connection.db
+      await connection.db
         .insert(appMetadata)
         .values(record)
         .onConflictDoUpdate({

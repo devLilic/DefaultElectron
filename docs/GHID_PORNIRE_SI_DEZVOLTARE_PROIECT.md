@@ -53,8 +53,8 @@ docs/                    documentație operațională
 Ordinea recomandată:
 
 1. Clonezi starterul.
-2. Rulezi `npm install`.
-3. Inițializezi metadatele proiectului cu `npm run init:starter`.
+2. Selectezi versiunea Node din [`.node-version`](../.node-version) și rulezi `npm run init:starter`.
+3. Rulezi `npm ci`.
 4. Verifici `config/base.ts`, `config/development.ts`, `config/production.ts`.
 5. Confirmi ce module sunt active și ce module rămân dezactivate.
 6. Rulezi aplicația în dev.

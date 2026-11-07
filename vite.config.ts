@@ -2,8 +2,9 @@ import { rmSync } from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import electron from 'vite-plugin-electron/simple'
-import pkg from './package.json'
+import pkg from './package.json' with { type: 'json' }
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -16,11 +17,12 @@ export default defineConfig(({ command }) => {
   return {
     resolve: {
       alias: {
-        '@': path.join(__dirname, 'src')
+        '@': path.join(import.meta.dirname, 'src')
       },
     },
     plugins: [
       react(),
+      tailwindcss(),
       electron({
         main: {
           // Shortcut of `build.lib.entry`
@@ -37,7 +39,7 @@ export default defineConfig(({ command }) => {
               sourcemap,
               minify: isBuild,
               outDir: 'dist-electron/main',
-              rollupOptions: {
+              rolldownOptions: {
                 external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
               },
             },
@@ -52,16 +54,15 @@ export default defineConfig(({ command }) => {
               sourcemap: sourcemap ? 'inline' : undefined, // #332
               minify: isBuild,
               outDir: 'dist-electron/preload',
-              rollupOptions: {
-                external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
+              rolldownOptions: {
+                output: {
+                  format: 'cjs',
+                  entryFileNames: '[name].cjs',
+                },
               },
             },
           },
         },
-        // Ployfill the Electron and Node.js API for Renderer process.
-        // If you want use Node.js in Renderer process, the `nodeIntegration` needs to be enabled in the Main process.
-        // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
-        renderer: {},
       }),
     ],
     server: process.env.VSCODE_DEBUG && (() => {

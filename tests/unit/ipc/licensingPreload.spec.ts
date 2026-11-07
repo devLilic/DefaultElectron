@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { toLicensingDegradedModeState } from '../../../electron/preload/modules/licensingApi'
+
+vi.mock('electron', () => ({}))
 
 describe('licensing preload helpers', () => {
   it('maps a licensing status snapshot to the safe degraded mode view', () => {

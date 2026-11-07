@@ -83,6 +83,8 @@ Primary starter-owned targets usually include:
 - `config/base.ts`
 - README and project docs when requested
 
+Run `npm run init:starter` from the project root (or pass the same values as `--key=value` arguments). The initializer updates both `package.json` and the root package entry in `package-lock.json`; it can be safely rerun with the same values if initialization is interrupted.
+
 ## Module Selection Workflow
 
 Codex must identify the module set for the new project:

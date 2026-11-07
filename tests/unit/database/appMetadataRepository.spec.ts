@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createInMemoryDatabaseConnection } from '../../../electron/main/modules/database'
+import { createInMemoryDatabaseConnection } from '../../../electron/main/modules/database/testUtils'
 import { createAppMetadataRepository } from '../../../electron/main/modules/database/repositories'
 
 describe('app metadata repository', () => {
@@ -19,6 +19,8 @@ describe('app metadata repository', () => {
         `,
       )
       .run()
+
+    await expect(repository.getByKey('app.theme')).resolves.toBeNull()
 
     await repository.upsert({
       key: 'app.theme',

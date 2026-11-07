@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { loadConfig } from '../../../config/loadConfig'
 import { createDatabaseMainModule } from '../../../electron/main/modules/database/createDatabaseMainModule'
+
+vi.mock('electron', () => ({}))
 
 describe('database module gating', () => {
   it('stays disabled when the database feature flag is off', () => {

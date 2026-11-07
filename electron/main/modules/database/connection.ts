@@ -1,5 +1,6 @@
 import { mkdirSync } from 'node:fs'
 import path from 'node:path'
+import { DatabaseSync, type SQLInputValue } from 'node:sqlite'
 import type { AppConfig } from '../../../../config/types'
 import type { DatabaseConnection, DatabaseConnectionPlan } from './types'
 import { databaseSchema } from './schema'
@@ -31,22 +32,44 @@ export async function createDatabaseConnection(
     mkdirSync(path.dirname(plan.filePath), { recursive: true })
   }
 
-  const [{ default: Database }, { drizzle }] = await Promise.all([
-    import('better-sqlite3'),
-    import('drizzle-orm/better-sqlite3'),
-  ])
-
-  const client = new Database(plan.filePath)
-  const db = drizzle(client, {
-    schema: databaseSchema,
+  const { drizzle } = await import('drizzle-orm/sqlite-proxy')
+  const client = new DatabaseSync(plan.filePath, {
+    enableForeignKeyConstraints: true,
   })
+  try {
+    if (!plan.inMemory) {
+      client.exec('PRAGMA journal_mode = WAL;')
+    }
+    const db = drizzle(async (query, params, method) => {
+      const statement = client.prepare(query)
+      statement.setReturnArrays(true)
+      const values = params as SQLInputValue[]
 
-  return {
-    plan,
-    client,
-    db,
-    close() {
-      client.close()
-    },
+      switch (method) {
+        case 'all':
+        case 'values':
+          return { rows: statement.all(...values) }
+        case 'get':
+          // Drizzle expects one flat row, or undefined when no row matched.
+          return { rows: statement.get(...values) as unknown as unknown[] }
+        case 'run':
+          statement.run(...values)
+          return { rows: [] }
+        default:
+          throw new Error(`Unsupported SQLite query method: ${method}`)
+      }
+    }, { schema: databaseSchema })
+
+    return {
+      plan,
+      client,
+      db,
+      close() {
+        client.close()
+      },
+    }
+  } catch (error) {
+    client.close()
+    throw error
   }
 }

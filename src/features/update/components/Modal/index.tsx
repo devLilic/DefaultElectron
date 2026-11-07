@@ -51,7 +51,7 @@ const ModalTemplate: React.FC<React.PropsWithChildren<{
 const Modal = (props: Parameters<typeof ModalTemplate>[0] & { open: boolean }) => {
   const { open, ...rest } = props
 
-  return createPortal(open ? ModalTemplate(rest) : null, document.body)
+  return createPortal(open ? <ModalTemplate {...rest} /> : null, document.body)
 }
 
 export default Modal

@@ -46,6 +46,7 @@ describe('database connection plan', () => {
 
     expect(connection.plan.filePath).toBe(':memory:')
     expect(connection.plan.inMemory).toBe(true)
+    expect(connection.client.prepare('PRAGMA foreign_keys').get()).toEqual({ foreign_keys: 1 })
 
     connection.close()
   })

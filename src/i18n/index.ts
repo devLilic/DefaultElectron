@@ -30,7 +30,7 @@ export function createI18nInstance(config: RendererAppConfig): I18nInstance {
     react: {
       useSuspense: false,
     },
-    initImmediate: false,
+    initAsync: false,
   })
 
   return instance

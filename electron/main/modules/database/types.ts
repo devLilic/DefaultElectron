@@ -1,6 +1,6 @@
 import type { AppConfig } from '../../../../config/types'
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
-import type { Database } from 'better-sqlite3'
+import type { DatabaseSync } from 'node:sqlite'
+import type { SqliteRemoteDatabase } from 'drizzle-orm/sqlite-proxy'
 import type { databaseSchema } from './schema'
 
 export interface DatabaseModuleContext {
@@ -18,10 +18,8 @@ export interface DatabaseConnectionPlan {
 
 export interface DatabaseConnection {
   plan: DatabaseConnectionPlan
-  client: Database
-  db: BetterSQLite3Database<typeof databaseSchema> & {
-    $client: Database
-  }
+  client: DatabaseSync
+  db: SqliteRemoteDatabase<typeof databaseSchema>
   close: () => void
 }
 

@@ -6,19 +6,12 @@ export const developmentConfig: AppConfig = {
   environment: 'development',
   features: {
     ...baseConfig.features,
-    i18n: false,
     autoUpdate: false,
     appProtection: false,
     licensing: false,
-    database: false,
-    logging: true,
   },
   update: {
     ...baseConfig.update,
-    enabled: false,
-  },
-  i18n: {
-    ...baseConfig.i18n,
     enabled: false,
   },
   appProtection: {
@@ -43,17 +36,8 @@ export const developmentConfig: AppConfig = {
       ...baseConfig.licensing.endpoints,
     },
   },
-  database: {
-    ...baseConfig.database,
-    enabled: false,
-    provider: 'sqlite',
-    orm: 'drizzle',
-    fileName: 'app.db',
-    inMemoryForTests: false,
-  },
   logging: {
     ...baseConfig.logging,
-    enabled: true,
     level: 'debug',
   },
 }

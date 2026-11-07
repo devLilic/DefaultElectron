@@ -44,10 +44,10 @@ export const starterModuleManifests: Record<StarterModuleId, StarterModuleManife
   },
   database: {
     id: 'database',
-    dependencies: ['better-sqlite3', 'drizzle-orm'],
-    devDependencies: ['@types/better-sqlite3'],
+    dependencies: ['drizzle-orm'],
+    devDependencies: [],
     configKeys: ['APP_DATABASE_FILE_NAME'],
-    validation: ['npm rebuild better-sqlite3', 'npm test'],
+    validation: ['npm run typecheck', 'npm test'],
     documentation: 'docs/MODULES.md#database',
   },
   logging: {

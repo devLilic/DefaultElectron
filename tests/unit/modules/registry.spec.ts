@@ -31,6 +31,7 @@ describe('module registry', () => {
       features: {
         ...loadConfig('development', {}).features,
         autoUpdate: true,
+        i18n: false,
       },
     })
 
@@ -51,6 +52,9 @@ describe('module registry', () => {
       features: {
         ...loadConfig('development', {}).features,
         autoUpdate: true,
+        i18n: false,
+        database: false,
+        logging: true,
       },
     })
     const mainRegister = vi.fn()
