@@ -11,7 +11,9 @@ npm run init:starter
 npm ci
 ```
 
-The wizard also supports reproducible input, for example:
+Each interactive question shows an example answer. Where a default is available, press Enter to use it. GitHub questions appear when you select `autoUpdate`.
+
+You can also pass the values directly.
 
 ```bash
 npm run init:starter -- --app-name=acme --app-id=com.acme.desktop --package-name=@acme/desktop --display-name="Acme Desktop" --modules=logging,i18n

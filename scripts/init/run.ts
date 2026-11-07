@@ -6,7 +6,12 @@ import { stdin as input, stdout as output } from 'node:process'
 import { applyStarterInit } from './applyStarterInit.ts'
 import { starterModuleManifests } from './modules.ts'
 import { resolveStarterFeatureSelection } from './index.ts'
-import { resolveStarterInitValues, type StarterInitPartialInputValues } from './transform.ts'
+import {
+  normalizeDisplayName,
+  normalizePackageName,
+  resolveStarterInitValues,
+  type StarterInitPartialInputValues,
+} from './transform.ts'
 import { starterModuleIds, type StarterModuleId } from './types.ts'
 
 export function parseInitArgs(argv: string[]): StarterInitPartialInputValues & {
@@ -71,28 +76,46 @@ async function promptForInputs(): Promise<StarterInitPartialInputValues & {
 }> {
   const prompt = createInterface({ input, output })
   try {
-    const appName = await prompt.question('App name: ')
-    const packageName = await prompt.question(`Package name [${appName || 'electron-starter'}]: `)
-    const displayName = await prompt.question(`Display name [${appName || packageName || 'Electron Starter'}]: `)
-    const appId = await prompt.question('App ID (reverse DNS, optional): ')
-    const modules = await prompt.question(`Modules (${starterModuleIds.join(', ')}) [logging]: `)
+    const appName = (await prompt.question(
+      'App name (e.g. acme, Enter to derive from the package name) > ',
+    )) || undefined
+    const packageNameHint = appName
+      ? `Enter for ${normalizePackageName(appName)}`
+      : 'Enter to derive from the display name'
+    const packageName = (await prompt.question(
+      `Package name (e.g. @acme/desktop or acme-desktop, ${packageNameHint}) > `,
+    )) || undefined
+    const defaultDisplayName = normalizeDisplayName(appName ?? packageName ?? 'Electron Starter')
+    const displayName = (await prompt.question(`Display name (e.g. Acme Desktop, Enter for ${defaultDisplayName}) > `)) || undefined
+    const { appId: defaultAppId } = resolveStarterInitValues({
+      appName,
+      packageName,
+      displayName,
+      initialEnabledModules: [],
+    })
+    const appId = await prompt.question(`App ID (reverse DNS, e.g. com.acme.desktop, Enter for ${defaultAppId}) > `)
+    const modules = await prompt.question(
+      `Modules (comma-separated, e.g. logging,i18n, Enter for logging). Choose from ${starterModuleIds.join(', ')} > `,
+    )
     const selectedModules = parseModules(modules || 'logging')
-    const defaultLanguage = await prompt.question('Default language (en, ro, ru) [ro]: ')
+    const defaultLanguage = await prompt.question('Default language (en, ro, ru, e.g. en, Enter for ro) > ')
 
     let updateOwner: string | undefined
     let updateRepo: string | undefined
     let updateVisibility: 'public' | 'private' | undefined
     if (selectedModules.includes('autoUpdate')) {
-      updateOwner = await prompt.question('GitHub owner: ')
-      updateRepo = await prompt.question('GitHub repository: ')
-      updateVisibility = (await prompt.question('Repository visibility (public/private) [public]: ') || 'public') as 'public' | 'private'
+      updateOwner = await prompt.question('GitHub owner (username or organization, e.g. acme) > ')
+      updateRepo = await prompt.question('GitHub repository (repo name only, e.g. acme-desktop) > ')
+      updateVisibility = (await prompt.question(
+        'Repository visibility (public or private, e.g. private, Enter for public) > ',
+      ) || 'public') as 'public' | 'private'
     }
 
     return {
-      appName: appName || undefined,
+      appName,
       appId: appId || undefined,
-      packageName: packageName || undefined,
-      displayName: displayName || undefined,
+      packageName,
+      displayName,
       defaultLanguage: (defaultLanguage || 'ro') as 'en' | 'ro' | 'ru',
       updateOwner,
       updateRepo,
